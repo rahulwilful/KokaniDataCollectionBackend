@@ -262,7 +262,7 @@ const ReceiveMessagesAndReply = (req, res) => {
           messaging_product: "whatsapp",
           to: from,
           text: {
-            body: "Hi.. I'm Prasath, your message is " + msg_body,
+            body: "Hi.. I'm Rahul, your message is " + msg_body,
           },
         },
         headers: {
