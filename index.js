@@ -37,7 +37,7 @@ app.get("/", (req, res) => {
   return res.status(200).send("Welcome To The KokaniDataCollection Back-End");
 });
 /* https://docs.google.com/spreadsheets/d/1TcfqySEW5ggOxIVMH2lQEGRACW8ASdhUtKZNR7GpCfY/edit#gid=0 */
-
+/* 
 const writeGoggle = async () => {
   const auth = new google.auth.GoogleAuth({
     keyFile: "kokanidatacollection.json",
@@ -62,7 +62,7 @@ const writeGoggle = async () => {
       values: [["rahul", "rahul@gmail.com", "9374338737"]],
     },
   });
-};
+}; */
 
 app.post("/send-whatsapp", async (req, res) => {
   const { phoneNumber, message } = req.body;
@@ -150,7 +150,7 @@ app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
 
-writeGoggle();
+//writeGoggle();
 
 /*  keyFile: {
       type: process.env.type,
