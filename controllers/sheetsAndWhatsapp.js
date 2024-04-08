@@ -9,13 +9,6 @@ const { OAuth2Client } = require("google-auth-library");
 const axios = require("axios");
 const dotenv = require("dotenv").config();
 
-//@desc Test User API
-//@route GET google-sheets/
-//@access Public
-const TestGoogleSheetsAPI = async (req, res) => {
-  return res.status(200).send("GoogleSheets API test successfull");
-};
-
 const phone_id = process.env.PHONE_NUMBER_ID;
 const token = process.env.WABLA_API_TOKEN;
 const private_key = process.env.PRIVATE_KEY;
@@ -61,6 +54,10 @@ const auth = new google.auth.GoogleAuth({
 });
 
 const spreadsheetId = "1TcfqySEW5ggOxIVMH2lQEGRACW8ASdhUtKZNR7GpCfY";
+//////////////////////////////////////////////////////////////////////////
+const TestGoogleSheetsAPI = async (req, res) => {
+  return res.status(200).send("GoogleSheets API test successfull");
+};
 
 //@desc Adds New Row
 //@route GET google-sheets/addrow
