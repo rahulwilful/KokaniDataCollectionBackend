@@ -9,6 +9,13 @@ const { OAuth2Client } = require("google-auth-library");
 const axios = require("axios");
 const dotenv = require("dotenv").config();
 
+//@desc Test User API
+//@route GET google-sheets/
+//@access Public
+const TestGoogleSheetsAPI = async (req, res) => {
+  return res.status(200).send("GoogleSheets API test successfull");
+};
+
 const phone_id = process.env.PHONE_NUMBER_ID;
 const token = process.env.WABLA_API_TOKEN;
 const private_key = process.env.PRIVATE_KEY;
@@ -294,11 +301,4 @@ module.exports = {
   VarifyToken,
   ReceiveMessagesAndReply,
   SendWhatsappMsg,
-};
-
-//@desc Test User API
-//@route GET google-sheets/
-//@access Public
-const TestGoogleSheetsAPI = async (req, res) => {
-  return res.status(200).send("GoogleSheets API test successfull");
 };
