@@ -1,7 +1,10 @@
 const { validationResult, matchedData } = require("express-validator");
 const bcrypt = require("bcryptjs");
+
 const fs = require("fs");
+
 const secret = "test";
+
 const jwt = require("jsonwebtoken");
 const { google } = require("googleapis");
 const { OAuth2Client } = require("google-auth-library");
@@ -214,6 +217,9 @@ const Delete = async (req, res) => {
   }
 };
 
+//@desc Varifyies Backend Url in Configuration At Meta For Developers
+//@route GET google-sheets/webhook
+//@access Public
 const VarifyToken = async (req, res) => {
   const VERIFY_TOKEN = process.env.VARIFY_TOKEN;
 
@@ -239,7 +245,19 @@ const VarifyToken = async (req, res) => {
   }
 };
 
-const ReceiveMessagesAndReply = (req, res) => {
+//@desc Receives Messages And Replies
+//@route POST google-sheets/webhook
+//@access Public
+const ReceiveMessagesAndReply = async (req, res) => {
+  /////////////////////////////////////////////////////////////////
+  const authClientObject = await auth.getClient();
+
+  const googleSheetInstance = google.sheets({
+    version: "v4",
+    auth: authClientObject,
+  });
+
+  //////////////////////////////////////////////////////////////
   let body_param = req.body;
 
   console.log(JSON.stringify(body_param, null, 2));
@@ -254,6 +272,23 @@ const ReceiveMessagesAndReply = (req, res) => {
       console.log("phone number " + phon_no_id);
       console.log("from " + from);
       console.log("boady param " + msg_body);
+
+      const msg = msg_body.split(",");
+
+      /*  if (msg[0] == "#") {
+      } */
+
+      const row = await googleSheetInstance.spreadsheets.values.update({
+        auth,
+        spreadsheetId,
+        range: `Sheet1!D${msg[0]}`,
+        valueInputOption: "USER_ENTERED",
+        resource: {
+          values: [[msg[1]]],
+        },
+      });
+
+      console.log("Row Update Successfull : ", row);
 
       axios({
         method: "POST",
@@ -277,6 +312,9 @@ const ReceiveMessagesAndReply = (req, res) => {
   }
 };
 
+//@desc Sends WhatsApp Messages
+//@route POST google-sheets/send-whatsapp
+//@access Public
 const SendWhatsappMsg = async (req, res) => {
   const { phoneNumber, message } = req.body;
   try {

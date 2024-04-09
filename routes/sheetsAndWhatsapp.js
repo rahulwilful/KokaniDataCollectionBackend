@@ -64,12 +64,12 @@ router.post(
   Delete
 );
 
-//@desc Edits Row
-//@route GET google-sheets/send-whatsapp
+//@desc Sends WhatsApp Messages
+//@route POST google-sheets/send-whatsapp
 //@access Public
 router.post("/send-whatsapp", SendWhatsappMsg);
 
-//@desc Edits Row
+//@desc Varifyies Backend Url in Configuration At Meta For Developers
 //@route GET google-sheets/webhook
 //@access Public
 router.get(
@@ -78,7 +78,7 @@ router.get(
   VarifyToken
 );
 
-//@desc Edits Row
+//@desc Receives Messages And Replies
 //@route POST google-sheets/webhook
 //@access Public
 router.post(
