@@ -295,7 +295,8 @@ const ReceiveMessagesAndReply = async (req, res) => {
         range: "sheet1",
       });
 
-      const data = JSON.stringify(response.data.values.result);
+      //const data = JSON.stringify(response.data.values);
+      const data = response.data.values;
 
       axios({
         method: "POST",
