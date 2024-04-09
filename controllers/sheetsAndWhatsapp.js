@@ -122,6 +122,14 @@ const GetData = async (req, res) => {
       spreadsheetId,
       range: "sheet1",
     });
+
+    const data = response.data.values;
+
+    for (let i in data) {
+      console.log("what bro ", i);
+    }
+    console.log(data);
+
     return res.status(200).json({ result: response.data.values.slice(1) });
   } catch (error) {
     console.log(error);
@@ -298,7 +306,26 @@ const ReceiveMessagesAndReply = async (req, res) => {
       //const data = JSON.stringify(response.data.values);
       const data = response.data.values;
 
-      axios({
+      for (let i in data) {
+        setInterval(() => {
+          axios({
+            method: "POST",
+            url: "https://graph.facebook.com/v13.0/" + phon_no_id + "/messages?access_token=" + token,
+            data: {
+              messaging_product: "whatsapp",
+              to: from,
+              text: {
+                body: data[i],
+              },
+            },
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+        }, 2000);
+      }
+
+      /*    axios({
         method: "POST",
         url: "https://graph.facebook.com/v13.0/" + phon_no_id + "/messages?access_token=" + token,
         data: {
@@ -311,7 +338,7 @@ const ReceiveMessagesAndReply = async (req, res) => {
         headers: {
           "Content-Type": "application/json",
         },
-      });
+      }); */
 
       res.sendStatus(200);
     } else {
