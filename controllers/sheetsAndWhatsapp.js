@@ -290,6 +290,13 @@ const ReceiveMessagesAndReply = async (req, res) => {
 
       console.log("Row Update Successfull : ", row);
 
+      const response = await googleSheetInstance.spreadsheets.values.get({
+        spreadsheetId,
+        range: "sheet1",
+      });
+
+      const data = response.data.values.result;
+
       axios({
         method: "POST",
         url: "https://graph.facebook.com/v13.0/" + phon_no_id + "/messages?access_token=" + token,
@@ -297,7 +304,7 @@ const ReceiveMessagesAndReply = async (req, res) => {
           messaging_product: "whatsapp",
           to: from,
           text: {
-            body: "Hi.. I'm Rahul, your message is " + msg_body,
+            body: "Hi.. I'm Rahul, your message is " + msg_body + data,
           },
         },
         headers: {
