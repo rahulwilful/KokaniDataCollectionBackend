@@ -315,7 +315,7 @@ const ReceiveMessagesAndReply = async (req, res) => {
               messaging_product: "whatsapp",
               to: from,
               text: {
-                body: data[i],
+                body: " hi " + data[i],
               },
             },
             headers: {
