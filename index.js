@@ -1,11 +1,16 @@
 const express = require("express");
 const dotenv = require("dotenv").config();
 const cors = require("cors");
+const connectToMongo = require("./config/db.js");
 
 const { google } = require("googleapis");
 const axios = require("axios");
 const bodyParser = require("body-parser");
+
+connectToMongo();
+
 const app = express();
+
 app.use(express.json());
 app.use(cors());
 
@@ -145,6 +150,7 @@ app.get("/webhook", (req, res) => {
 const port = process.env.PORT || 3001;
 
 app.use("/google-sheets", require("./routes/sheetsAndWhatsapp.js"));
+app.use("/translator", require("./routes/translator.js"));
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
