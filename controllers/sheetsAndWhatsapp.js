@@ -435,5 +435,5 @@ module.exports = {
   VarifyToken,
   ReceiveMessagesAndReply,
   SendWhatsappMsg,
-  SendAutomatedMsg,
+  /* SendAutomatedMsg, */
 };
