@@ -4,8 +4,9 @@ const { validationResult, matchedData } = require("express-validator");
 const addTranslator = async (req, res) => {
   try {
     const data = matchedData(req);
+    number = data.number;
     console.log("data", data);
-    const old = Translator.findOne({ number: data.number });
+    const old = await Translator.findOne({ number: data.number });
     console.log("old", old);
     if (old) {
       return res.status(400).json({ message: "translator exist" });
@@ -28,7 +29,7 @@ const getAllTranslators = async (req, res) => {
   try {
     // Retrieve all translators from the database
     const translators = await Translator.find();
-
+    console.log(translators);
     res.status(200).json(translators);
   } catch (error) {
     console.error("Error getting all translators:", error);
@@ -79,7 +80,7 @@ const getTranslatorById = async (req, res) => {
     const { translatorId } = req.body;
 
     // Find the translator by ID
-    const translator = await Translator.findById(translatorId);
+    const translator = await Translator.findById(req.params.id);
 
     if (!translator) {
       return res.status(404).json({ message: "Translator not found" });

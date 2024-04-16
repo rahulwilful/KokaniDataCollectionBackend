@@ -1,9 +1,12 @@
 const { validationResult, matchedData } = require("express-validator");
 const bcrypt = require("bcryptjs");
+const Translator = require("../Models/Translator.js");
 
 const fs = require("fs");
 
 const secret = "test";
+
+let lastCount = 0;
 
 const jwt = require("jsonwebtoken");
 const { google } = require("googleapis");
@@ -347,6 +350,67 @@ const ReceiveMessagesAndReply = async (req, res) => {
   }
 };
 
+//@desc Receives Messages And Replies
+//@route POST google-sheets/webhook
+//@access Public
+const SendAutomatedMsg = async (req, res) => {
+  /////////////////////////////////////////////////////////////////
+  const auth = new google.auth.GoogleAuth({
+    keyFile: "kokanidatacollection1.json",
+    scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+  });
+
+  const authClientObject = await auth.getClient();
+
+  const spreadsheetId = "1TcfqySEW5ggOxIVMH2lQEGRACW8ASdhUtKZNR7GpCfY";
+
+  const googleSheetInstance = google.sheets({
+    version: "v4",
+    auth: authClientObject,
+  });
+
+  /////////////////////////////////////////////////////////////////////////////////////
+  //let body_param = req.body;
+
+  //console.log(JSON.stringify(body_param, null, 2));
+  console.log("LastCount : ", lastCount);
+  const phone_no = "9767589256";
+  try {
+    const rows = await googleSheetInstance.spreadsheets.values.get({
+      spreadsheetId,
+      range: "Sheet1!B:B",
+    });
+
+    const data = rows.data.values;
+    if (data[lastCount]) {
+      axios({
+        method: "POST",
+        url: "https://graph.facebook.com/v13.0/" + phone_id + "/messages?access_token=" + token,
+        data: {
+          messaging_product: "whatsapp",
+          to: phone_no,
+          text: {
+            body: data[lastCount],
+          },
+        },
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      lastCount = lastCount + 1;
+    } else {
+      lastCount = 0;
+    }
+  } catch (err) {
+    console.log({ error: err, message: "masege sending faild" });
+  }
+};
+
+setInterval(() => {
+  SendAutomatedMsg();
+}, 10000);
+
 //@desc Sends WhatsApp Messages
 //@route POST google-sheets/send-whatsapp
 //@access Public
@@ -371,4 +435,5 @@ module.exports = {
   VarifyToken,
   ReceiveMessagesAndReply,
   SendWhatsappMsg,
+  SendAutomatedMsg,
 };
