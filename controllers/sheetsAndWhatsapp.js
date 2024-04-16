@@ -301,7 +301,7 @@ const ReceiveMessagesAndReply = async (req, res) => {
 
       console.log("Row Update Successfull : ", row);
 
-      const response = await googleSheetInstance.spreadsheets.values.get({
+      /*  const response = await googleSheetInstance.spreadsheets.values.get({
         spreadsheetId,
         range: "sheet1",
       });
@@ -326,9 +326,9 @@ const ReceiveMessagesAndReply = async (req, res) => {
             },
           });
         }, 2000);
-      }
+      } */
 
-      /*    axios({
+      axios({
         method: "POST",
         url: "https://graph.facebook.com/v13.0/" + phon_no_id + "/messages?access_token=" + token,
         data: {
@@ -341,7 +341,7 @@ const ReceiveMessagesAndReply = async (req, res) => {
         headers: {
           "Content-Type": "application/json",
         },
-      }); */
+      });
 
       res.sendStatus(200);
     } else {
