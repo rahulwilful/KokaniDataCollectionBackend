@@ -382,6 +382,7 @@ const SendAutomatedMsg = async (req, res) => {
     });
 
     const data = rows.data.values;
+    console.log(data);
     if (data[lastCount]) {
       axios({
         method: "POST",
@@ -390,7 +391,7 @@ const SendAutomatedMsg = async (req, res) => {
           messaging_product: "whatsapp",
           to: phone_no,
           text: {
-            body: data[lastCount],
+            body: "just a sample message to check whats app api message",
           },
         },
         headers: {
