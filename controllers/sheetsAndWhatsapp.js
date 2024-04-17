@@ -287,27 +287,82 @@ const ReceiveMessagesAndReply = async (req, res) => {
       /*  if (msg[0] == "#") {
       } */
 
-      const row = await googleSheetInstance.spreadsheets.values.update({
-        auth,
-        spreadsheetId,
-        range: `Sheet1!D${msg[0]}`,
-        valueInputOption: "USER_ENTERED",
-        resource: {
-          values: [[msg[1]]],
-        },
-      });
+      if (msg[1] != "" || msg[1] != null) {
+        axios({
+          method: "POST",
+          url: "https://graph.facebook.com/v13.0/" + phon_no_id + "/messages?access_token=" + token,
+          data: {
+            messaging_product: "whatsapp",
+            to: from,
+            text: {
+              body: " plzz provide valid translation in following format ( number , translation ) eg :- (2,भाषांतर) ",
+            },
+          },
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        console.log("invalid translation format");
+        res.sendStatus(405);
+      }
 
-      console.log("Row Update Successfull : ", row);
+      const user = await Translator.findOneAndUpdate({ number: from });
 
-      const response = await googleSheetInstance.spreadsheets.values.get({
+      if (!user) {
+        console.log("unauthorised translator");
+        res.sendStatus(404);
+      }
+
+      if (!isNaN(parseInt(msg[0])) && msg[0] != 0) {
+        console.log("sentence number : ", msg[0]);
+        const row = await googleSheetInstance.spreadsheets.values.update({
+          auth,
+          spreadsheetId,
+          range: `Sheet1!D${msg[0]}`,
+          valueInputOption: "USER_ENTERED",
+          resource: {
+            values: [[msg[1]]],
+          },
+        });
+
+        await Translator.findOneAndUpdate(
+          { number: from },
+          {
+            sentence: "",
+            answerd: true,
+            sentence_id: null,
+          }
+        );
+
+        console.log("Row Update Successfull : ");
+      } else {
+        axios({
+          method: "POST",
+          url: "https://graph.facebook.com/v13.0/" + phon_no_id + "/messages?access_token=" + token,
+          data: {
+            messaging_product: "whatsapp",
+            to: from,
+            text: {
+              body: " plzz provide valide translation in following format ( number , translation ) eg :- (2,भाषांतर) ",
+            },
+          },
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        console.log("invalid translation format");
+        res.sendStatus(405);
+      }
+
+      /*   const response = await googleSheetInstance.spreadsheets.values.get({
         spreadsheetId,
         range: "sheet1",
-      });
+      }); */
 
       //const data = JSON.stringify(response.data.values);
-      const data = response.data.values;
+      //const data = response.data.values;
 
-      for (let i in data) {
+      /*  for (let i in data) {
         setInterval(() => {
           axios({
             method: "POST",
@@ -324,22 +379,7 @@ const ReceiveMessagesAndReply = async (req, res) => {
             },
           });
         }, 2000);
-      }
-
-      /*  axios({
-        method: "POST",
-        url: "https://graph.facebook.com/v13.0/" + phon_no_id + "/messages?access_token=" + token,
-        data: {
-          messaging_product: "whatsapp",
-          to: from,
-          text: {
-            body: "Hi.. I'm Rahul, your message is " + msg_body,
-          },
-        },
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }); */
+      } */
 
       res.sendStatus(200);
     } else {
@@ -348,7 +388,7 @@ const ReceiveMessagesAndReply = async (req, res) => {
   }
 };
 
-let lastCount = 1;
+let lastCount = 8;
 
 //@desc Receives Messages And Replies
 //@route POST google-sheets/webhook
@@ -380,11 +420,20 @@ const SendAutomatedMsg = async (req, res) => {
       spreadsheetId,
       range: `Sheet1!B${lastCount}:B`,
     });
+    if (!rows.data.values) {
+      console.log("No data to send ");
+      return;
+    }
     const data = rows.data.values;
     const translators = await Translator.find();
-    console.log(translators);
+    //console.log("data length : ", data.length);
+    console.log("data : ", data);
+    //console.log(translators);
+
     for (let i in translators) {
+      console.log("data[i] : ", data[i]);
       if (data[i]) {
+        //check if answerd previous translation else send previos sentence
         if (translators[i].answerd == true) {
           let msg = data[i].toString();
 
@@ -402,6 +451,7 @@ const SendAutomatedMsg = async (req, res) => {
               "Content-Type": "application/json",
             },
           });
+
           let id = translators[i]._id;
           console.log("Id : ", id);
           await Translator.findOneAndUpdate(
@@ -410,26 +460,43 @@ const SendAutomatedMsg = async (req, res) => {
             },
             {
               sentence: msg,
+              sentence_id: lastCount,
+              answerd: false,
             }
           );
 
           lastCount = lastCount + 1;
+        } else {
+          const prevSentence = translators[i].sentence;
+          const sentence_id = translators[i].sentence_id;
+          axios({
+            method: "POST",
+            url: "https://graph.facebook.com/v13.0/" + phone_id + "/messages?access_token=" + token,
+            data: {
+              messaging_product: "whatsapp",
+              to: "91" + translators[i].number,
+              text: {
+                body: " " + sentence_id + " , " + prevSentence + ". ",
+              },
+            },
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
         }
       } else {
+        console.log("No data is available  to send further sentences");
         break;
       }
     }
-
-    console.log("data length : ", data.length);
-    console.log("data : ", data);
   } catch (err) {
-    console.log({ error: err, message: "masege sending faild" });
+    console.log({ error: err, message: "message sending faild" });
   }
 };
 
 setInterval(() => {
   SendAutomatedMsg();
-}, 10000);
+}, 30000);
 
 //@desc Sends WhatsApp Messages
 //@route POST google-sheets/send-whatsapp
