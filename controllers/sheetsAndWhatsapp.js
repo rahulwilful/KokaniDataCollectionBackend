@@ -315,14 +315,19 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
       if (!isNaN(parseInt(msg[0])) && msg[0] != 0) {
         console.log("sentence number : ", msg[0]);
 
-        await Translator.findOneAndUpdate(
+        const user = await Translator.findOneAndUpdate(
           { number: from },
           {
             sentence: "",
             answerd: true,
             sentence_id: null,
+          },
+          {
+            new: true,
           }
         );
+
+        console.log("user : ", user);
 
         const row = await googleSheetInstance.spreadsheets.values.update({
           auth,
@@ -467,7 +472,7 @@ const SendAutomatedMsg = async (req, res) => {
 
 setInterval(() => {
   SendAutomatedMsg();
-}, 120000);
+}, 60000);
 
 //@desc Sends WhatsApp Messages
 //@route POST google-sheets/send-whatsapp
