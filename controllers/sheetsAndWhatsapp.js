@@ -312,7 +312,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
         res.sendStatus(404);
       }
       //check if msg[0] is an intiger and not '0' as well else send invalid format message
-      if (!isNaN(parseInt(msg[0])) && msg[0] != 0) {
+      if (msg[0] != 0) {
         console.log("sentence number : ", msg[0]);
 
         const user = await Translator.findOneAndUpdate(
@@ -392,7 +392,7 @@ const SendAutomatedMsg = async (req, res) => {
 
   //console.log(JSON.stringify(body_param, null, 2));
   console.log("LastCount : ", lastCount);
-  const phone_no = "9767589256";
+
   try {
     const rows = await googleSheetInstance.spreadsheets.values.get({
       spreadsheetId,
@@ -430,7 +430,7 @@ const SendAutomatedMsg = async (req, res) => {
             },
           });
 
-          await Translator.findOneAndUpdate(
+          const user = await Translator.findOneAndUpdate(
             {
               number: translators[i].number,
             },
@@ -438,7 +438,8 @@ const SendAutomatedMsg = async (req, res) => {
               sentence: msg,
               sentence_id: lastCount,
               answerd: false,
-            }
+            },
+            { new: true }
           );
 
           lastCount = lastCount + 1;
