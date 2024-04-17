@@ -461,6 +461,9 @@ const SendAutomatedMsg = async (req, res) => {
             },
           });
         }
+        setTimeout(() => {
+          console.log("100ms");
+        });
       } else {
         console.log("No data is available  to send further sentences");
         break;
