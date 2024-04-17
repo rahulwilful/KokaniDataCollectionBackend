@@ -287,7 +287,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
       /*  if (msg[0] == "#") {
       } */
       //check if translation message is present
-      if (msg[1] != "" || msg[1] != null) {
+      if (!msg[1]) {
         axios({
           method: "POST",
           url: "https://graph.facebook.com/v13.0/" + phon_no_id + "/messages?access_token=" + token,
@@ -353,33 +353,6 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
         console.log("invalid translation format");
         res.sendStatus(405);
       }
-
-      /*   const response = await googleSheetInstance.spreadsheets.values.get({
-        spreadsheetId,
-        range: "sheet1",
-      }); */
-
-      //const data = JSON.stringify(response.data.values);
-      //const data = response.data.values;
-
-      /*  for (let i in data) {
-        setInterval(() => {
-          axios({
-            method: "POST",
-            url: "https://graph.facebook.com/v13.0/" + phon_no_id + "/messages?access_token=" + token,
-            data: {
-              messaging_product: "whatsapp",
-              to: from,
-              text: {
-                body: " hi " + data[i],
-              },
-            },
-            headers: {
-              "Content-Type": "application/json",
-            },
-          });
-        }, 2000);
-      } */
 
       res.sendStatus(200);
     } else {
@@ -496,7 +469,7 @@ const SendAutomatedMsg = async (req, res) => {
 
 setInterval(() => {
   SendAutomatedMsg();
-}, 30000);
+}, 60000);
 
 //@desc Sends WhatsApp Messages
 //@route POST google-sheets/send-whatsapp
