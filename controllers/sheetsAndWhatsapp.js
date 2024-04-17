@@ -6,8 +6,6 @@ const fs = require("fs");
 
 const secret = "test";
 
-let lastCount = 0;
-
 const jwt = require("jsonwebtoken");
 const { google } = require("googleapis");
 const { OAuth2Client } = require("google-auth-library");
@@ -301,7 +299,7 @@ const ReceiveMessagesAndReply = async (req, res) => {
 
       console.log("Row Update Successfull : ", row);
 
-      /*  const response = await googleSheetInstance.spreadsheets.values.get({
+      const response = await googleSheetInstance.spreadsheets.values.get({
         spreadsheetId,
         range: "sheet1",
       });
@@ -326,9 +324,9 @@ const ReceiveMessagesAndReply = async (req, res) => {
             },
           });
         }, 2000);
-      } */
+      }
 
-      axios({
+      /*  axios({
         method: "POST",
         url: "https://graph.facebook.com/v13.0/" + phon_no_id + "/messages?access_token=" + token,
         data: {
@@ -341,7 +339,7 @@ const ReceiveMessagesAndReply = async (req, res) => {
         headers: {
           "Content-Type": "application/json",
         },
-      });
+      }); */
 
       res.sendStatus(200);
     } else {
@@ -349,6 +347,8 @@ const ReceiveMessagesAndReply = async (req, res) => {
     }
   }
 };
+
+let lastCount = 1;
 
 //@desc Receives Messages And Replies
 //@route POST google-sheets/webhook
@@ -374,43 +374,62 @@ const SendAutomatedMsg = async (req, res) => {
 
   //console.log(JSON.stringify(body_param, null, 2));
   console.log("LastCount : ", lastCount);
-  const phone_no = "919767589256";
+  const phone_no = "9767589256";
   try {
     const rows = await googleSheetInstance.spreadsheets.values.get({
       spreadsheetId,
-      range: "Sheet1!B:B",
+      range: `Sheet1!B${lastCount}:B`,
     });
-
     const data = rows.data.values;
-    console.log(data);
-    if (data[lastCount]) {
-      axios({
-        method: "POST",
-        url: "https://graph.facebook.com/v13.0/" + phone_id + "/messages?access_token=" + token,
-        data: {
-          messaging_product: "whatsapp",
-          to: phone_no,
-          text: {
-            body: "just a sample message to check whats app api message",
-          },
-        },
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+    const translators = await Translator.find();
+    console.log(translators);
+    for (let i in translators) {
+      if (data[i]) {
+        if (translators[i].answerd == true) {
+          let msg = data[i].toString();
 
-      lastCount = lastCount + 1;
-    } else {
-      lastCount = 0;
+          axios({
+            method: "POST",
+            url: "https://graph.facebook.com/v13.0/" + phone_id + "/messages?access_token=" + token,
+            data: {
+              messaging_product: "whatsapp",
+              to: "91" + translators[i].number,
+              text: {
+                body: " " + lastCount + " , " + msg + ". ",
+              },
+            },
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+          let id = translators[i]._id;
+          console.log("Id : ", id);
+          await Translator.findOneAndUpdate(
+            {
+              number: translators[i].number,
+            },
+            {
+              sentence: msg,
+            }
+          );
+
+          lastCount = lastCount + 1;
+        }
+      } else {
+        break;
+      }
     }
+
+    console.log("data length : ", data.length);
+    console.log("data : ", data);
   } catch (err) {
     console.log({ error: err, message: "masege sending faild" });
   }
 };
 
-/* setInterval(() => {
+setInterval(() => {
   SendAutomatedMsg();
-}, 10000); */
+}, 10000);
 
 //@desc Sends WhatsApp Messages
 //@route POST google-sheets/send-whatsapp
@@ -436,5 +455,5 @@ module.exports = {
   VarifyToken,
   ReceiveMessagesAndReply,
   SendWhatsappMsg,
-  /* SendAutomatedMsg, */
+  SendAutomatedMsg,
 };
