@@ -27,7 +27,7 @@ var options = {
   },
   data: {
     messaging_product: "whatsapp",
-    to: "+91 9767589256",
+    to: "+91 9923826906",
     type: "template",
     template: { name: "hello_world", language: { code: "en_US" } },
   },
@@ -314,15 +314,6 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
       //check if msg[0] is an intiger and not '0' as well else send invalid format message
       if (!isNaN(parseInt(msg[0])) && msg[0] != 0) {
         console.log("sentence number : ", msg[0]);
-        const row = await googleSheetInstance.spreadsheets.values.update({
-          auth,
-          spreadsheetId,
-          range: `Sheet1!D${msg[0]}`,
-          valueInputOption: "USER_ENTERED",
-          resource: {
-            values: [[msg[1]]],
-          },
-        });
 
         await Translator.findOneAndUpdate(
           { number: from },
@@ -332,6 +323,16 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
             sentence_id: null,
           }
         );
+
+        const row = await googleSheetInstance.spreadsheets.values.update({
+          auth,
+          spreadsheetId,
+          range: `Sheet1!D${msg[0]}`,
+          valueInputOption: "USER_ENTERED",
+          resource: {
+            values: [[msg[1]]],
+          },
+        });
 
         console.log("Row Update Successfull : ");
       } else {
@@ -400,7 +401,7 @@ const SendAutomatedMsg = async (req, res) => {
     const translators = await Translator.find();
     //console.log("data length : ", data.length);
     console.log("data : ", data);
-    //console.log(translators);
+    console.log(translators);
 
     for (let i in translators) {
       console.log("data[i] : ", data[i]);
@@ -466,7 +467,7 @@ const SendAutomatedMsg = async (req, res) => {
 
 setInterval(() => {
   SendAutomatedMsg();
-}, 60000);
+}, 120000);
 
 //@desc Sends WhatsApp Messages
 //@route POST google-sheets/send-whatsapp
