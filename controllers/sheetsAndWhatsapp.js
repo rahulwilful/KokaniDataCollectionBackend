@@ -257,138 +257,104 @@ const VarifyToken = async (req, res) => {
 //@desc Receives Messages And Replies
 //@route POST google-sheets/webhook
 //@access Public
-const ReceiveMessagesAndReply = async (req, res) => {
-  /////////////////////////////////////////////////////////////////
-  const authClientObject = await auth.getClient();
+const ReceiveMessagesAndUpdateSheet = async (req, res) => {
+  try {
+    const authClientObject = await auth.getClient();
+    const googleSheetInstance = google.sheets({
+      version: "v4",
+      auth: authClientObject,
+    });
 
-  const googleSheetInstance = google.sheets({
-    version: "v4",
-    auth: authClientObject,
-  });
+    const body_param = req.body;
 
-  //////////////////////////////////////////////////////////////
-  let body_param = req.body;
+    console.log(JSON.stringify(body_param, null, 2));
 
-  console.log(JSON.stringify(body_param, null, 2));
-
-  if (body_param.object) {
-    console.log("inside body param");
-    if (body_param.entry && body_param.entry[0].changes && body_param.entry[0].changes[0].value.messages && body_param.entry[0].changes[0].value.messages[0]) {
-      let phon_no_id = body_param.entry[0].changes[0].value.metadata.phone_number_id;
-      let from = body_param.entry[0].changes[0].value.messages[0].from;
-      let msg_body = body_param.entry[0].changes[0].value.messages[0].text.body;
-
-      console.log("phone number " + phon_no_id);
-      console.log("from " + from);
-      console.log("boady param " + msg_body);
-
-      const msg = msg_body.split(",");
-
-      /*  if (msg[0] == "#") {
-      } */
-
-      if (msg[1] != "" || msg[1] != null) {
-        axios({
-          method: "POST",
-          url: "https://graph.facebook.com/v13.0/" + phon_no_id + "/messages?access_token=" + token,
-          data: {
-            messaging_product: "whatsapp",
-            to: from,
-            text: {
-              body: " plzz provide valid translation in following format ( number , translation ) eg :- (2,भाषांतर) ",
-            },
-          },
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        console.log("invalid translation format");
-        res.sendStatus(405);
-      }
-
-      const user = await Translator.findOneAndUpdate({ number: from });
-
-      if (!user) {
-        console.log("unauthorised translator");
-        res.sendStatus(404);
-      }
-
-      if (!isNaN(parseInt(msg[0])) && msg[0] != 0) {
-        console.log("sentence number : ", msg[0]);
-        const row = await googleSheetInstance.spreadsheets.values.update({
-          auth,
-          spreadsheetId,
-          range: `Sheet1!D${msg[0]}`,
-          valueInputOption: "USER_ENTERED",
-          resource: {
-            values: [[msg[1]]],
-          },
-        });
-
-        await Translator.findOneAndUpdate(
-          { number: from },
-          {
-            sentence: "",
-            answerd: true,
-            sentence_id: null,
-          }
-        );
-
-        console.log("Row Update Successfull : ");
-      } else {
-        axios({
-          method: "POST",
-          url: "https://graph.facebook.com/v13.0/" + phon_no_id + "/messages?access_token=" + token,
-          data: {
-            messaging_product: "whatsapp",
-            to: from,
-            text: {
-              body: " plzz provide valide translation in following format ( number , translation ) eg :- (2,भाषांतर) ",
-            },
-          },
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        console.log("invalid translation format");
-        res.sendStatus(405);
-      }
-
-      /*   const response = await googleSheetInstance.spreadsheets.values.get({
-        spreadsheetId,
-        range: "sheet1",
-      }); */
-
-      //const data = JSON.stringify(response.data.values);
-      //const data = response.data.values;
-
-      /*  for (let i in data) {
-        setInterval(() => {
-          axios({
-            method: "POST",
-            url: "https://graph.facebook.com/v13.0/" + phon_no_id + "/messages?access_token=" + token,
-            data: {
-              messaging_product: "whatsapp",
-              to: from,
-              text: {
-                body: " hi " + data[i],
-              },
-            },
-            headers: {
-              "Content-Type": "application/json",
-            },
-          });
-        }, 2000);
-      } */
-
-      res.sendStatus(200);
-    } else {
-      res.sendStatus(404);
+    if (!body_param.object || !body_param.entry || !body_param.entry[0].changes || !body_param.entry[0].changes[0].value.messages || !body_param.entry[0].changes[0].value.messages[0]) {
+      return res.sendStatus(404);
     }
+
+    const phon_no_id = body_param.entry[0].changes[0].value.metadata.phone_number_id;
+    const from = body_param.entry[0].changes[0].value.messages[0].from;
+    const msg_body = body_param.entry[0].changes[0].value.messages[0].text.body;
+
+    console.log("phone number " + phon_no_id);
+    console.log("from " + from);
+    console.log("body param " + msg_body);
+
+    const msg = msg_body.split(",");
+
+    // Check if translation message is present
+    if (!msg[1]) {
+      await sendInvalidTranslationResponse(phon_no_id, from);
+      return res.sendStatus(405);
+    }
+
+    const user = await Translator.findOne({ number: from });
+
+    if (!user) {
+      console.log("unauthorized translator");
+      return res.sendStatus(404);
+    }
+
+    // Check if msg[0] is an integer and not '0'
+    const sentenceNumber = parseInt(msg[0]);
+    if (!isNaN(sentenceNumber) && sentenceNumber !== 0) {
+      console.log("sentence number: ", sentenceNumber);
+      await googleSheetInstance.spreadsheets.values.update({
+        auth,
+        spreadsheetId,
+        range: `Sheet1!D${sentenceNumber}`,
+        valueInputOption: "USER_ENTERED",
+        resource: {
+          values: [[msg[1]]],
+        },
+      });
+
+      await Translator.findOneAndUpdate(
+        { number: from },
+        {
+          sentence: "",
+          answered: true,
+          sentence_id: null,
+        }
+      );
+
+      console.log("Row Update Successful");
+    } else {
+      await sendInvalidTranslationResponse(phon_no_id, from);
+      return res.sendStatus(405);
+    }
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.error("Error:", error);
+    res.sendStatus(500);
   }
 };
 
-let lastCount = 8;
+const sendInvalidTranslationResponse = async (phon_no_id, from) => {
+  try {
+    await axios({
+      method: "POST",
+      url: `https://graph.facebook.com/v13.0/${phon_no_id}/messages?access_token=${token}`,
+      data: {
+        messaging_product: "whatsapp",
+        to: from,
+        text: {
+          body: "Please provide valid translation in the following format (number, translation) eg: (2,भाषांतर)",
+        },
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    console.log("Invalid translation format");
+  } catch (error) {
+    console.error("Error sending invalid translation response:", error);
+  }
+};
+
+let lastCount = 1;
 
 //@desc Receives Messages And Replies
 //@route POST google-sheets/webhook
@@ -520,7 +486,8 @@ module.exports = {
   EditData,
   Delete,
   VarifyToken,
-  ReceiveMessagesAndReply,
+  ReceiveMessagesAndUpdateSheet,
   SendWhatsappMsg,
   SendAutomatedMsg,
+  sendInvalidTranslationResponse,
 };

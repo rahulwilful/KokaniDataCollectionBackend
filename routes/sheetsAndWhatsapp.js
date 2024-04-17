@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { body } = require("express-validator");
-const { TestGoogleSheetsAPI, AddRow, Delete, EditData, GetData, ReceiveMessagesAndReply, SendWhatsappMsg, VarifyToken } = require("../controllers/sheetsAndWhatsapp.js");
+const { TestGoogleSheetsAPI, AddRow, Delete, EditData, GetData, ReceiveMessagesAndUpdateSheet, SendWhatsappMsg, VarifyToken } = require("../controllers/sheetsAndWhatsapp.js");
 
 //@desc Test User API
 //@route GET google-sheets/
@@ -84,7 +84,7 @@ router.get(
 router.post(
   "/webhook",
 
-  ReceiveMessagesAndReply
+  ReceiveMessagesAndUpdateSheet
 );
 
 module.exports = router;
