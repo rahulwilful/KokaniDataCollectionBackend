@@ -284,8 +284,6 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
 
       const msg = msg_body.split(",");
 
-      /*  if (msg[0] == "#") {
-      } */
       //check if translation message is present
       if (!msg[1]) {
         axios({
@@ -305,6 +303,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
         console.log("invalid translation format");
         res.sendStatus(405);
       }
+
       const user = await Translator.findOneAndUpdate({ number: from });
 
       //check if the user is valid
@@ -415,7 +414,7 @@ const SendAutomatedMsg = async (req, res) => {
             url: "https://graph.facebook.com/v13.0/" + phone_id + "/messages?access_token=" + token,
             data: {
               messaging_product: "whatsapp",
-              to: "91" + translators[i].number,
+              to: translators[i].number,
               text: {
                 body: " " + lastCount + " , " + msg + ". ",
               },
@@ -425,8 +424,6 @@ const SendAutomatedMsg = async (req, res) => {
             },
           });
 
-          let id = translators[i]._id;
-          console.log("Id : ", id);
           await Translator.findOneAndUpdate(
             {
               number: translators[i].number,
@@ -447,7 +444,7 @@ const SendAutomatedMsg = async (req, res) => {
             url: "https://graph.facebook.com/v13.0/" + phone_id + "/messages?access_token=" + token,
             data: {
               messaging_product: "whatsapp",
-              to: "91" + translators[i].number,
+              to: translators[i].number,
               text: {
                 body: " " + sentence_id + " , " + prevSentence + ". ",
               },
@@ -469,7 +466,7 @@ const SendAutomatedMsg = async (req, res) => {
 
 setInterval(() => {
   SendAutomatedMsg();
-}, 60000);
+}, 10000);
 
 //@desc Sends WhatsApp Messages
 //@route POST google-sheets/send-whatsapp
