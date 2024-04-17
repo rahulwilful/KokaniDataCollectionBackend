@@ -304,7 +304,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
         res.sendStatus(405);
       }
 
-      const user = await Translator.findOneAndUpdate({ number: from });
+      const user = await Translator.findOne({ number: from });
 
       //check if the user is valid
       if (!user) {
@@ -476,7 +476,7 @@ const SendAutomatedMsg = async (req, res) => {
 
 setInterval(() => {
   SendAutomatedMsg();
-}, 60000);
+}, 10000);
 
 //@desc Sends WhatsApp Messages
 //@route POST google-sheets/send-whatsapp
