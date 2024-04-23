@@ -452,13 +452,6 @@ const SendAutomatedMsg = async (req, res) => {
             { new: true }
           );
 
-          const sentence = await Sentence.create({
-            translator_id: user._id,
-            sentence: msg,
-            translation: msg,
-            sentence_id: lastCount,
-          });
-
           lastCount = lastCount + 1;
         } else {
           const prevSentence = translators[i].sentence;
