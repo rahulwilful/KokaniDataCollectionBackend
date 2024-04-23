@@ -376,8 +376,6 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
   }
 };
 
-let lastCount = 1;
-
 //@desc Receives Messages And Replies
 //@route POST google-sheets/webhook
 //@access Public
@@ -401,9 +399,15 @@ const SendAutomatedMsg = async (req, res) => {
   //let body_param = req.body;
 
   //console.log(JSON.stringify(body_param, null, 2));
-  console.log("LastCount : ", lastCount);
 
   try {
+    const last = await LastCount.find();
+    const lastId = last[0]._id;
+    let lastCount = last[0].lastCount;
+    const checkLastCount = lastCount;
+    console.log("last : ", last);
+    console.log("LastCount : ", lastCount);
+
     const rows = await googleSheetInstance.spreadsheets.values.get({
       spreadsheetId,
       range: `Sheet1!B${lastCount}:B`,
@@ -479,6 +483,24 @@ const SendAutomatedMsg = async (req, res) => {
         break;
       }
     }
+
+    console.log("checkLastCount : ", checkLastCount);
+    console.log("lastCount", lastCount);
+    console.log("lastId", lastId);
+
+    if (lastCount > checkLastCount) {
+      console.log("updating");
+      const lastCount2 = await LastCount.findByIdAndUpdate(
+        { _id: lastId },
+        {
+          lastCount: lastCount,
+        },
+        {
+          new: true,
+        }
+      );
+      console.log("after update lastCount", lastCount2);
+    }
   } catch (err) {
     console.log({ error: err, message: "message sending faild" });
   }
@@ -486,7 +508,7 @@ const SendAutomatedMsg = async (req, res) => {
 
 setInterval(() => {
   SendAutomatedMsg();
-}, 10000);
+}, 60000);
 
 //@desc Sends WhatsApp Messages
 //@route POST google-sheets/send-whatsapp
@@ -503,6 +525,21 @@ const SendWhatsappMsg = async (req, res) => {
   }
 };
 
+//@desc Sends WhatsApp Messages
+//@route POST google-sheets/get-last-count
+//@access Public
+const GetLastCount = async (req, res) => {
+  try {
+    const lastCount = await LastCount.find();
+    console.log("result : ", lastCount);
+    const lastCount2 = lastCount[0].lastCount;
+    console.log("lastCount : ", lastCount2);
+    res.status(201).json({ result: lastCount });
+  } catch (error) {
+    res.status(500).json({ message: "something went wrong" });
+  }
+};
+
 module.exports = {
   TestGoogleSheetsAPI,
   AddRow,
@@ -513,4 +550,5 @@ module.exports = {
   ReceiveMessagesAndUpdateSheet,
   SendWhatsappMsg,
   SendAutomatedMsg,
+  GetLastCount,
 };
