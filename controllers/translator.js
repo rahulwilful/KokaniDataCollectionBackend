@@ -82,6 +82,8 @@ const getTranslatorById = async (req, res) => {
     // Find the translator by ID
     const translator = await Translator.findById(req.params.id);
 
+    console.log(" Translator ", translator);
+
     if (!translator) {
       return res.status(404).json({ message: "Translator not found" });
     }

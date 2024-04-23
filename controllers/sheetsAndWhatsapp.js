@@ -1,6 +1,8 @@
 const { validationResult, matchedData } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const Translator = require("../Models/Translator.js");
+const LastCount = require("../Models/LastCount.js");
+const Sentence = require("../Models/Sentence.js");
 
 const fs = require("fs");
 
@@ -27,7 +29,7 @@ var options = {
   },
   data: {
     messaging_product: "whatsapp",
-    to: "+91 9923826906",
+    to: "+91 9767589256",
     type: "template",
     template: { name: "hello_world", language: { code: "en_US" } },
   },
@@ -219,6 +221,7 @@ const Delete = async (req, res) => {
       spreadsheetId,
       range: `Sheet1!A${id}:C${id}`,
     });
+
     return res.status(200).json({ result: row });
   } catch (error) {
     console.log(error);
@@ -278,9 +281,9 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
       let from = body_param.entry[0].changes[0].value.messages[0].from;
       let msg_body = body_param.entry[0].changes[0].value.messages[0].text.body;
 
-      console.log("phone number " + phon_no_id);
-      console.log("from " + from);
-      console.log("boady param " + msg_body);
+      console.log("phone number : " + phon_no_id);
+      console.log("from : " + from);
+      console.log("boady param : " + msg_body);
 
       const msg = msg_body.split(",");
 
@@ -304,16 +307,23 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
         res.sendStatus(405);
       }
 
-      const user = await Translator.findOne({ number: from });
+      const checkUser = await Translator.findOne({ number: from });
 
       //check if the user is valid
-      if (!user) {
+      if (!checkUser) {
         console.log("unauthorised translator");
         res.sendStatus(404);
       }
       //check if msg[0] is an intiger and not '0' as well else send invalid format message
       if (msg[0] != 0) {
         console.log("sentence number : ", msg[0]);
+
+        const sentence = await Sentence.create({
+          translator_id: checkUser._id,
+          sentence: checkUser.sentence,
+          translation: msg[1],
+          sentence_id: checkUser.sentence_id,
+        });
 
         const user = await Translator.findOneAndUpdate(
           { number: from },
@@ -409,7 +419,7 @@ const SendAutomatedMsg = async (req, res) => {
     console.log(translators);
 
     for (let i in translators) {
-      console.log("data[i] : ", data[i]);
+      console.log("data[i] : ", data[i], " number : ", translators[i].number);
       if (data[i]) {
         //check if answerd previous translation else send previos sentence
         if (translators[i].answerd == true) {
@@ -441,6 +451,13 @@ const SendAutomatedMsg = async (req, res) => {
             },
             { new: true }
           );
+
+          const sentence = await Sentence.create({
+            translator_id: user._id,
+            sentence: msg,
+            translation: msg,
+            sentence_id: lastCount,
+          });
 
           lastCount = lastCount + 1;
         } else {
@@ -474,9 +491,9 @@ const SendAutomatedMsg = async (req, res) => {
   }
 };
 
-/* setInterval(() => {
+setInterval(() => {
   SendAutomatedMsg();
-}, 10000); */
+}, 10000);
 
 //@desc Sends WhatsApp Messages
 //@route POST google-sheets/send-whatsapp

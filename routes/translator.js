@@ -46,7 +46,7 @@ routes.post("/delete");
 //@desc Get User By Id  API
 //@route POST translator/get_by_id
 //@access Public
-routes.post("/get_by_id/:id", getTranslatorById);
+routes.get("/get_by_id/:id", getTranslatorById);
 
 //@desc GET ALL API
 //@route GET translator/
