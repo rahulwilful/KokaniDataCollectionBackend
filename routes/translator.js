@@ -26,7 +26,7 @@ routes.get("/getall", getAllTranslators);
 //@route POST translator/update
 //@access Public
 routes.post(
-  "/update",
+  "/update/:id",
   [
     body("name", "Enter a valid name").isLength({ min: 3 }),
     body("number", "Enter a Valid number").isNumeric().isLength({

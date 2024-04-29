@@ -133,7 +133,7 @@ const GetData = async (req, res) => {
     }
     console.log(data);
 
-    return res.status(200).json({ result: response.data.values.slice(1) });
+    return res.status(200).json({ result: response.data.values /* .slice(1) */ });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: error });
@@ -456,6 +456,13 @@ const SendAutomatedMsg = async (req, res) => {
             { new: true }
           );
 
+          /* const sentence = await Sentence.create({
+            translator_id: translators[i]._id,
+            sentence: msg,
+            translation: msg,
+            sentence_id: lastCount,
+          }); */
+
           lastCount = lastCount + 1;
         } else {
           const prevSentence = translators[i].sentence;
@@ -506,9 +513,9 @@ const SendAutomatedMsg = async (req, res) => {
   }
 };
 
-setInterval(() => {
+ setInterval(() => {
   SendAutomatedMsg();
-}, 10000);
+}, 10000); 
 
 //@desc Sends WhatsApp Messages
 //@route POST google-sheets/send-whatsapp

@@ -82,8 +82,6 @@ app.post("/send-whatsapp", async (req, res) => {
 });
 
 app.post("/webhook", (req, res) => {
-  //i want some
-
   let body_param = req.body;
 
   console.log(JSON.stringify(body_param, null, 2));
@@ -151,7 +149,8 @@ const port = process.env.PORT || 3001;
 
 app.use("/google-sheets", require("./routes/sheetsAndWhatsapp.js"));
 app.use("/translator", require("./routes/translator.js"));
-
+app.use("/sentence", require("./routes/sentence.js"));
+app.use("/user", require("./routes/user.js"));
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

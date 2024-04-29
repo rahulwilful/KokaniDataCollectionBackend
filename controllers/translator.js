@@ -37,18 +37,24 @@ const getAllTranslators = async (req, res) => {
   }
 };
 
-// Controller function to handle updating a translator
 const updateTranslator = async (req, res) => {
   try {
-    // Extract data from request body
     const { translatorId, name, number, sentence, sentence_id } = req.body;
+    const id = req.params.id;
 
-    // Find the translator by ID and update its properties
+    const data = matchedData(req);
+    console.log("data : ", data);
     const updatedTranslator = await Translator.findByIdAndUpdate(
-      translatorId,
-      { name, number, sentence, sentence_id },
+      id,
+      {
+        name: data.name,
+        number: data.number,
+      },
       { new: true } // Return the updated document
     );
+    if (!updatedTranslator) {
+      return res.status(404).json({ message: "Translator not found" });
+    }
 
     res.status(200).json({ message: "Translator updated successfully", translator: updatedTranslator });
   } catch (error) {
