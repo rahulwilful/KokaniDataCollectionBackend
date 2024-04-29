@@ -31,7 +31,7 @@ const createSuperUser = async (req, res) => {
   const ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
 
   if (!errors.isEmpty()) {
-    logger.error(`${ip}: API /api/v1/user/add | User: ${user.name} | responnded with Error `);
+    logger.error(`${ip}: API /api/v1/user/add | User:| responnded with Error `);
     return res.status(400).json({ errors: errors.array() });
   }
 
@@ -40,13 +40,13 @@ const createSuperUser = async (req, res) => {
 
   const oldUser = await User.findOne({ email: data.email });
   if (oldUser) {
-    logger.error(`${ip}: API /api/v1/user/add | User: ${user.name} | responnded with User already registered! for email: ${data.email} `);
+    logger.error(`${ip}: API /api/v1/user/add | User: ${oldUser.name} | responnded with User already registered! for email: ${oldUser.email} `);
     return res.status(400).json({ message: "User already registered!" });
   }
 
   const salt = await bcrypt.genSalt(10);
   const securedPass = await bcrypt.hash(data.password, salt);
-  await User.create({
+  const user = await User.create({
     name: data.name,
     email: data.email,
     password: securedPass,
@@ -291,7 +291,7 @@ const logIn = async (req, res) => {
     return res.status(200).json({ data: oldUser, token, message: "Login Successfull" });
   } catch (error) {
     logger.info(`${ip}: API /api/v1/user/login responnded with error`);
-    console.log(error);
+    console.log("login error", error);
     return res.status(500).json({ message: "Something went wrong" });
   }
 };
