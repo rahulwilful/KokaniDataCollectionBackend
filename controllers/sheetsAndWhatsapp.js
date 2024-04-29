@@ -513,9 +513,9 @@ const SendAutomatedMsg = async (req, res) => {
   }
 };
 
-setInterval(() => {
+/* setInterval(() => {
   SendAutomatedMsg();
-}, 120000);
+}, 120000); */
 
 //@desc Sends WhatsApp Messages
 //@route POST google-sheets/send-whatsapp
