@@ -23,6 +23,18 @@ const translatorSchema = new Schema({
     type: Boolean,
     default: true,
   },
+  stopped: {
+    type: Boolean,
+    default: false,
+  },
+  firstReply: {
+    type: Boolean,
+    default: false,
+  },
+  templateMSG: {
+    type: Boolean,
+    default: false,
+  },
   active: {
     type: Boolean,
     default: true,

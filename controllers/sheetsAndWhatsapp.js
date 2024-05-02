@@ -289,6 +289,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
 
       //check if translation message is present
       if (!msg[1]) {
+        console.log("message[0] : ", msg[0], " message : ", msg);
         InvalidFormatMSG(from);
         /* axios({
           method: "POST",
@@ -352,6 +353,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
 
         console.log("Row Update Successfull : ");
       } else {
+        console.log("message[0] : ", msg[0], " message : ", msg);
         InvalidFormatMSG(from);
         /*   axios({
           method: "POST",
@@ -515,9 +517,9 @@ const SendAutomatedMsg = async (req, res) => {
   }
 };
 
-setInterval(() => {
+/* setInterval(() => {
   SendAutomatedMsg();
-}, 10000);
+}, 10000); */
 
 //@desc Sends WhatsApp Messages
 //@route POST google-sheets/send-whatsapp
@@ -587,6 +589,7 @@ const InvalidFormatMSG = async (number) => {
   } catch (error) {
     console.error("error : ", error);
   }
+  return;
 };
 module.exports = {
   TestGoogleSheetsAPI,
