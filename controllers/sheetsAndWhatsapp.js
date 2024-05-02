@@ -289,7 +289,8 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
 
       //check if translation message is present
       if (!msg[1]) {
-        axios({
+        InvalidFormatMSG(from);
+        /* axios({
           method: "POST",
           url: "https://graph.facebook.com/v13.0/" + phon_no_id + "/messages?access_token=" + token,
           data: {
@@ -302,7 +303,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
           headers: {
             "Content-Type": "application/json",
           },
-        });
+        }); */
         console.log("invalid translation format");
         res.sendStatus(405);
       }
@@ -351,7 +352,8 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
 
         console.log("Row Update Successfull : ");
       } else {
-        axios({
+        InvalidFormatMSG(from);
+        /*   axios({
           method: "POST",
           url: "https://graph.facebook.com/v13.0/" + phon_no_id + "/messages?access_token=" + token,
           data: {
@@ -364,7 +366,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
           headers: {
             "Content-Type": "application/json",
           },
-        });
+        }); */
         console.log("invalid translation format");
         res.sendStatus(405);
       }
@@ -522,7 +524,26 @@ const SendAutomatedMsg = async (req, res) => {
 //@access Public
 const SendWhatsappMsg = async (req, res) => {
   const { phoneNumber, message } = req.body;
+
+  const data = matchedData(req);
+  console.log("data : ", data);
+
   try {
+    var options = {
+      method: "POST",
+      url: `https://graph.facebook.com/v15.0/${phone_id}/messages`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      data: {
+        messaging_product: "whatsapp",
+        to: data.number || "+91 9767589256",
+        type: data.template || "template",
+        template: { name: "hello_world", language: { code: "en_US" } },
+      },
+    };
+
     const response = await axios.request(options);
     console.log("Message sent successfully:", response.data);
     res.status(200).json({ success: true, message: "Message sent successfully" });
@@ -547,6 +568,26 @@ const GetLastCount = async (req, res) => {
   }
 };
 
+const InvalidFormatMSG = async (number) => {
+  try {
+    await axios({
+      method: "POST",
+      url: "https://graph.facebook.com/v13.0/" + phon_no_id + "/messages?access_token=" + token,
+      data: {
+        messaging_product: "whatsapp",
+        to: number,
+        text: {
+          body: " plzz provide valide translation in following format ( number , translation ) eg :- (2,भाषांतर) ",
+        },
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  } catch (error) {
+    console.error("error : ", error);
+  }
+};
 module.exports = {
   TestGoogleSheetsAPI,
   AddRow,

@@ -67,7 +67,17 @@ router.post(
 //@desc Sends WhatsApp Messages
 //@route POST google-sheets/send-whatsapp
 //@access Public
-router.post("/send-whatsapp", SendWhatsappMsg);
+router.post(
+  "/send-whatsapp",
+  [
+    body("number", "number required").isInt({
+      min: 12,
+    }),
+
+    body("template"),
+  ],
+  SendWhatsappMsg
+);
 
 //@desc Varifyies Backend Url in Configuration At Meta For Developers
 //@route GET google-sheets/webhook
