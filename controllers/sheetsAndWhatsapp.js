@@ -574,7 +574,7 @@ const InvalidFormatMSG = async (number) => {
   try {
     await axios({
       method: "POST",
-      url: "https://graph.facebook.com/v13.0/" + phon_no_id + "/messages?access_token=" + token,
+      url: "https://graph.facebook.com/v13.0/" + phone_id + "/messages?access_token=" + token,
       data: {
         messaging_product: "whatsapp",
         to: number,
