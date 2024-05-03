@@ -334,7 +334,8 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
           },
         }); */
         console.log("invalid translation format");
-        res.sendStatus(405);
+        res.status(405);
+        return;
       }
 
       const checkUser = await Translator.findOne({ number: from });
@@ -342,7 +343,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
       //check if the user is valid
       if (!checkUser) {
         console.log("unauthorised translator");
-        res.sendStatus(404);
+        res.status(404);
       }
       //check if msg[0] is an intiger and not '0' as well else send invalid format message
 
