@@ -257,6 +257,10 @@ const VarifyToken = async (req, res) => {
   }
 };
 
+setInterval(() => {
+  SendAutomatedMsg();
+}, 30000);
+
 //@desc Receives Messages And Replies
 //@route POST google-sheets/webhook
 //@access Public
@@ -339,9 +343,17 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
         res.sendStatus(404);
       }
       //check if msg[0] is an intiger and not '0' as well else send invalid format message
-      if (msg[0] != 0) {
-        console.log("sentence number : ", msg[0]);
 
+      let isNum = false;
+      if (typeof msg[0] === "number") {
+        console.log("Valid Sentence Id , is a Number : ", msg[0], " ,isNum : ", isNum);
+        isNum = true;
+      } else {
+        console.log("Invalid Sentence Id, not a Number", msg[0], " ,isNum : ", isNum);
+        isNum = false;
+      }
+
+      if (msg[0] != 0 && isNum == true) {
         const sentence = await Sentence.create({
           translator_id: checkUser._id,
           sentence: checkUser.sentence,
@@ -538,10 +550,6 @@ const SendAutomatedMsg = async (req, res) => {
     console.log({ error: err, message: "message sending faild" });
   }
 };
-
-setInterval(() => {
-  SendAutomatedMsg();
-}, 30000);
 
 //@desc Sends WhatsApp Messages
 //@route POST google-sheets/send-whatsapp
