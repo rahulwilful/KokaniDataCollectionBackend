@@ -257,9 +257,9 @@ const VarifyToken = async (req, res) => {
   }
 };
 
-/* setInterval(() => {
+setInterval(() => {
   SendAutomatedMsg();
-}, 30000); */
+}, 30000);
 
 //@desc Receives Messages And Replies
 //@route POST google-sheets/webhook
@@ -304,6 +304,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
               new: true,
             }
           );
+          return;
         } else if (msg[0] == "stop") {
           const user = await Translator.findOneAndUpdate(
             { number: from },
@@ -314,6 +315,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
               new: true,
             }
           );
+          return;
         } else {
           InvalidFormatMSG(from);
         }
@@ -389,7 +391,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
         console.log("Row Update Successfull : ");
       } else {
         console.log("message[0] : ", msg[0], " message : ", msg);
-        InvalidFormatMSG(from);
+        InvalidFormatMSG2(from);
         /*   axios({
           method: "POST",
           url: "https://graph.facebook.com/v13.0/" + phon_no_id + "/messages?access_token=" + token,
@@ -602,6 +604,30 @@ const GetLastCount = async (req, res) => {
 };
 
 const InvalidFormatMSG = async (number) => {
+  console.log("InvalidFormatMSG");
+  try {
+    await axios({
+      method: "POST",
+      url: "https://graph.facebook.com/v13.0/" + phone_id + "/messages?access_token=" + token,
+      data: {
+        messaging_product: "whatsapp",
+        to: number,
+        text: {
+          body: " plzz provide valide translation in following format ( number , translation ) eg :- (2,भाषांतर) ",
+        },
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  } catch (error) {
+    console.error("error : ", error);
+  }
+  return;
+};
+
+const InvalidFormatMSG2 = async (number) => {
+  console.log("InvalidFormatMSG2");
   try {
     await axios({
       method: "POST",
