@@ -290,7 +290,29 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
       //check if translation message is present
       if (!msg[1]) {
         console.log("message[0] : ", msg[0], " message : ", msg);
-        InvalidFormatMSG(from);
+        if (msg[0] == "yes" || msg[0] == "start") {
+          const user = await Translator.findOneAndUpdate(
+            { number: from },
+            {
+              stopped: false,
+            },
+            {
+              new: true,
+            }
+          );
+        } else if (msg[0] == "stop") {
+          const user = await Translator.findOneAndUpdate(
+            { number: from },
+            {
+              stopped: true,
+            },
+            {
+              new: true,
+            }
+          );
+        } else {
+          InvalidFormatMSG(from);
+        }
         /* axios({
           method: "POST",
           url: "https://graph.facebook.com/v13.0/" + phon_no_id + "/messages?access_token=" + token,
@@ -586,13 +608,9 @@ const InvalidFormatMSG = async (number) => {
         "Content-Type": "application/json",
       },
     });
-    console.log("invalid translation format");
-    res.sendStatus(405);
   } catch (error) {
     console.error("error : ", error);
   }
-  console.log("invalid translation format");
-  res.sendStatus(405);
 };
 module.exports = {
   TestGoogleSheetsAPI,
