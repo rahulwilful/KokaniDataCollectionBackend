@@ -539,9 +539,9 @@ const SendAutomatedMsg = async (req, res) => {
   }
 };
 
-setInterval(() => {
+/* setInterval(() => {
   SendAutomatedMsg();
-}, 10000);
+}, 10000); */
 
 //@desc Sends WhatsApp Messages
 //@route POST google-sheets/send-whatsapp
@@ -611,6 +611,7 @@ const InvalidFormatMSG = async (number) => {
   } catch (error) {
     console.error("error : ", error);
   }
+  return;
 };
 module.exports = {
   TestGoogleSheetsAPI,
