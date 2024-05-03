@@ -339,7 +339,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
         res.sendStatus(404);
       }
       //check if msg[0] is an intiger and not '0' as well else send invalid format message
-      if (msg[0] != 0 && typeof msg[0] === "number") {
+      if (msg[0] != 0) {
         console.log("sentence number : ", msg[0]);
 
         const sentence = await Sentence.create({
@@ -541,7 +541,7 @@ const SendAutomatedMsg = async (req, res) => {
 
 setInterval(() => {
   SendAutomatedMsg();
-}, 10000);
+}, 30000);
 
 //@desc Sends WhatsApp Messages
 //@route POST google-sheets/send-whatsapp
