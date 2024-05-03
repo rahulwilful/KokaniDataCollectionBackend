@@ -358,38 +358,39 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
       }
 
       if (msg[0] != 0 && isNum == true) {
-        const sentence = await Sentence.create({
-          translator_id: checkUser._id,
-          sentence: checkUser.sentence,
-          translation: msg[1],
-          sentence_id: checkUser.sentence_id,
-        });
+        if (checkUser._id && checkUser.sentence && msg[1] && checkUser.sentence_id) {
+          const sentence = await Sentence.create({
+            translator_id: checkUser._id,
+            sentence: checkUser.sentence,
+            translation: msg[1],
+            sentence_id: checkUser.sentence_id,
+          });
 
-        const user = await Translator.findOneAndUpdate(
-          { number: from },
-          {
-            sentence: "",
-            answerd: true,
-            sentence_id: 0,
-          },
-          {
-            new: true,
-          }
-        );
+          const user = await Translator.findOneAndUpdate(
+            { number: from },
+            {
+              sentence: "",
+              answerd: true,
+              sentence_id: 0,
+            },
+            {
+              new: true,
+            }
+          );
 
-        console.log("user : ", user);
+          console.log("user : ", user);
 
-        const row = await googleSheetInstance.spreadsheets.values.update({
-          auth,
-          spreadsheetId,
-          range: `Sheet1!D${msg[0]}`,
-          valueInputOption: "USER_ENTERED",
-          resource: {
-            values: [[msg[1]]],
-          },
-        });
-
-        console.log("Row Update Successfull : ");
+          const row = await googleSheetInstance.spreadsheets.values.update({
+            auth,
+            spreadsheetId,
+            range: `Sheet1!D${msg[0]}`,
+            valueInputOption: "USER_ENTERED",
+            resource: {
+              values: [[msg[1]]],
+            },
+          });
+          console.log("Row Update Successfull : ");
+        }
       } else {
         console.log("message[0] : ", msg[0], " message : ", msg);
         InvalidFormatMSG2(from);
