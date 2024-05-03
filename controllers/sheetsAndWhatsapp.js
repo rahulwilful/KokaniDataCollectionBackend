@@ -257,9 +257,9 @@ const VarifyToken = async (req, res) => {
   }
 };
 
-setInterval(() => {
+/* setInterval(() => {
   SendAutomatedMsg();
-}, 30000);
+}, 30000); */
 
 //@desc Receives Messages And Replies
 //@route POST google-sheets/webhook
@@ -345,11 +345,12 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
       //check if msg[0] is an intiger and not '0' as well else send invalid format message
 
       let isNum = false;
-      if (typeof msg[0] === "number") {
-        console.log("Valid Sentence Id , is a Number : ", msg[0], " ,isNum : ", isNum);
+      let sentenceId = parseInt(msg[0]);
+      if (!isNaN(sentenceId)) {
+        console.log("Valid Sentence Id , is a Number : ", sentenceId, " ,isNum : ", isNum);
         isNum = true;
       } else {
-        console.log("Invalid Sentence Id, not a Number", msg[0], " ,isNum : ", isNum);
+        console.log("Invalid Sentence Id, not a Number", sentenceId, " ,isNum : ", isNum);
         isNum = false;
       }
 
