@@ -354,7 +354,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
           {
             sentence: "",
             answerd: true,
-            sentence_id: null,
+            sentence_id: 0,
           },
           {
             new: true,
@@ -539,9 +539,9 @@ const SendAutomatedMsg = async (req, res) => {
   }
 };
 
-/* setInterval(() => {
+setInterval(() => {
   SendAutomatedMsg();
-}, 10000); */
+}, 10000);
 
 //@desc Sends WhatsApp Messages
 //@route POST google-sheets/send-whatsapp
