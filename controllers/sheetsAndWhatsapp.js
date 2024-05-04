@@ -422,12 +422,12 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
           },
         }); */
         console.log("invalid translation format");
-        res.sendStatus(405);
+        res.status(405);
       }
 
-      res.sendStatus(200);
+      res.status(200);
     } else {
-      res.sendStatus(404);
+      res.status(404);
     }
   }
 };
