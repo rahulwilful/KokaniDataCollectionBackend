@@ -317,6 +317,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
             { number: from },
             {
               stopped: false,
+              firstReply: true,
             },
             {
               new: true,
