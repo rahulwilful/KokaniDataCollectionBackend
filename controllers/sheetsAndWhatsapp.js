@@ -291,13 +291,15 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
 
       //spliting the message to extract sentenceId and traslation message
       const msg = [];
-      let parts = msg_body.split(", ");
+      let parts = msg_body.split(",");
       console.log("message[0] : ", parts[0], " message : ", parts);
 
       let firstPart = parts.shift();
-      let remainingString = parts.join(", ");
+      let remainingString = parts.join(",");
       msg[0] = firstPart;
       msg[1] = remainingString;
+
+      console.log("msg[0] : ", msg[0], " msg[1] : ", msg[1]);
 
       //check if translation message is present
       if (!msg[1]) {
