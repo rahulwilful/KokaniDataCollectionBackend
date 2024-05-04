@@ -342,6 +342,15 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
           res.status(201);
           return;
         } else {
+          const user = await Translator.findOneAndUpdate(
+            { number: from },
+            {
+              firstReply: true,
+            },
+            {
+              new: true,
+            }
+          );
           InvalidFormatMSG(from);
         }
         /* axios({
