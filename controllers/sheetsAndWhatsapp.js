@@ -301,6 +301,14 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
 
       console.log("msg[0] : ", msg[0], " msg[1] : ", msg[1]);
 
+      const checkUser = await Translator.findOne({ number: from });
+
+      //check if the user is valid
+      if (!checkUser) {
+        console.log("unauthorised translator");
+        res.status(404);
+      }
+
       //check if translation message is present
       if (!msg[1]) {
         //If Users Wants to stop messages
@@ -314,6 +322,8 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
               new: true,
             }
           );
+          console.log("Started message for Translator ", checkUser.name);
+          res.status(201);
           return;
         }
         //user wants to start messages
@@ -327,6 +337,8 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
               new: true,
             }
           );
+          console.log("Stopped message for Translator ", checkUser.name);
+          res.status(201);
           return;
         } else {
           InvalidFormatMSG(from);
@@ -350,13 +362,6 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
         return;
       }
 
-      const checkUser = await Translator.findOne({ number: from });
-
-      //check if the user is valid
-      if (!checkUser) {
-        console.log("unauthorised translator");
-        res.status(404);
-      }
       //check if msg[0] is an intiger and not '0' as well else send invalid format message
 
       let isNum = false;
