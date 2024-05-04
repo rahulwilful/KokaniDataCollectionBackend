@@ -291,7 +291,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
 
       //spliting the message to extract sentenceId and traslation message
       const msg = [];
-      let parts = msg.split(", ");
+      let parts = msg_body.split(", ");
       let firstPart = parts.shift();
       let remainingString = parts.join(", ");
       msg[0] = firstPart;
