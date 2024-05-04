@@ -292,6 +292,8 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
       //spliting the message to extract sentenceId and traslation message
       const msg = [];
       let parts = msg_body.split(", ");
+      console.log("message[0] : ", parts[0], " message : ", parts);
+
       let firstPart = parts.shift();
       let remainingString = parts.join(", ");
       msg[0] = firstPart;
@@ -299,8 +301,6 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
 
       //check if translation message is present
       if (!msg[1]) {
-        console.log("message[0] : ", msg[0], " message : ", msg);
-
         //If Users Wants to stop messages
         if (msg[0] == "yes" || msg[0] == "start") {
           const user = await Translator.findOneAndUpdate(
