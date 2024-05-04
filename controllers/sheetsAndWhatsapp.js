@@ -536,22 +536,24 @@ const SendAutomatedMsg = async (req, res) => {
 
           lastCount = lastCount + 1;
         } else {
-          const prevSentence = translators[i].sentence;
-          const sentence_id = translators[i].sentence_id;
-          axios({
-            method: "POST",
-            url: "https://graph.facebook.com/v13.0/" + phone_id + "/messages?access_token=" + token,
-            data: {
-              messaging_product: "whatsapp",
-              to: translators[i].number,
-              text: {
-                body: " " + sentence_id + " , " + prevSentence + ". ",
+          if (translators[i].stopped == false) {
+            const prevSentence = translators[i].sentence;
+            const sentence_id = translators[i].sentence_id;
+            axios({
+              method: "POST",
+              url: "https://graph.facebook.com/v13.0/" + phone_id + "/messages?access_token=" + token,
+              data: {
+                messaging_product: "whatsapp",
+                to: translators[i].number,
+                text: {
+                  body: " " + sentence_id + " , " + prevSentence + ". ",
+                },
               },
-            },
-            headers: {
-              "Content-Type": "application/json",
-            },
-          });
+              headers: {
+                "Content-Type": "application/json",
+              },
+            });
+          }
         }
         setTimeout(() => {
           console.log("100ms");
