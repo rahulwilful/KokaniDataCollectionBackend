@@ -289,11 +289,19 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
       console.log("from : " + from);
       console.log("boady param : " + msg_body);
 
-      const msg = msg_body.split(",");
+      //spliting the message to extract sentenceId and traslation message
+      const msg = [];
+      let parts = msg.split(", ");
+      let firstPart = parts.shift();
+      let remainingString = parts.join(", ");
+      msg[0] = firstPart;
+      msg[1] = remainingString;
 
       //check if translation message is present
       if (!msg[1]) {
         console.log("message[0] : ", msg[0], " message : ", msg);
+
+        //If Users Wants to stop messages
         if (msg[0] == "yes" || msg[0] == "start") {
           const user = await Translator.findOneAndUpdate(
             { number: from },
@@ -305,7 +313,9 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
             }
           );
           return;
-        } else if (msg[0] == "stop") {
+        }
+        //user wants to start messages
+        else if (msg[0] == "stop") {
           const user = await Translator.findOneAndUpdate(
             { number: from },
             {
@@ -357,6 +367,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
         console.log("Invalid Sentence Id, not a Number", sentenceId, " ,isNum : ", isNum);
       }
 
+      //update user and sheet with translation
       if (msg[0] != 0 && isNum == true) {
         if (checkUser._id && checkUser.sentence && msg[1] && checkUser.sentence_id) {
           const sentence = await Sentence.create({
@@ -615,7 +626,7 @@ const InvalidFormatMSG = async (number) => {
         messaging_product: "whatsapp",
         to: number,
         text: {
-          body: " plzz provide valide translation in following format ( number , translation ) eg :- (2,भाषांतर) ",
+          body: "InvalidFormatMSG plzz provide valide translation in following format ( number , translation ) eg :- (2,भाषांतर) ",
         },
       },
       headers: {
@@ -638,7 +649,7 @@ const InvalidFormatMSG2 = async (number) => {
         messaging_product: "whatsapp",
         to: number,
         text: {
-          body: " plzz provide valide translation in following format ( number , translation ) eg :- (2,भाषांतर) ",
+          body: "InvalidFormatMSG2 plzz provide valide translation in following format ( number , translation ) eg :- (2,भाषांतर) ",
         },
       },
       headers: {
