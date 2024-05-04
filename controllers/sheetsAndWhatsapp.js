@@ -259,7 +259,7 @@ const VarifyToken = async (req, res) => {
 
 setInterval(() => {
   SendAutomatedMsg();
-}, 50000);
+}, 10000);
 
 //@desc Receives Messages And Replies
 //@route POST google-sheets/webhook
