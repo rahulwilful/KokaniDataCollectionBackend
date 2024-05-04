@@ -350,11 +350,11 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
       let isNum = false;
       let sentenceId = parseInt(msg[0]);
       if (!isNaN(sentenceId)) {
-        console.log("Valid Sentence Id , is a Number : ", sentenceId, " ,isNum : ", isNum);
         isNum = true;
+        console.log("Valid Sentence Id , is a Number : ", sentenceId, " ,isNum : ", isNum);
       } else {
-        console.log("Invalid Sentence Id, not a Number", sentenceId, " ,isNum : ", isNum);
         isNum = false;
+        console.log("Invalid Sentence Id, not a Number", sentenceId, " ,isNum : ", isNum);
       }
 
       if (msg[0] != 0 && isNum == true) {
@@ -383,7 +383,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
           const row = await googleSheetInstance.spreadsheets.values.update({
             auth,
             spreadsheetId,
-            range: `Sheet1!D${msg[0]}`,
+            range: `Sheet1!D${sentenceId}`,
             valueInputOption: "USER_ENTERED",
             resource: {
               values: [[msg[1]]],
