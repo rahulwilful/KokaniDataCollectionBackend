@@ -497,7 +497,7 @@ const SendAutomatedMsg = async (req, res) => {
       console.log("data[i] : ", data[i], " number : ", translators[i].number);
       if (data[i]) {
         //check if answerd previous translation else send previos sentence
-        if (translators[i].answerd == true && translators[i].stop == false) {
+        if (translators[i].answerd == true && translators[i].stopped == false) {
           let msg = data[i].toString();
 
           axios({
