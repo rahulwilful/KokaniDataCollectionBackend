@@ -308,7 +308,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
       //check if translation message is present
       if (!msg[1]) {
         //If Users Wants to stop messages
-        if (msg[0] == "yes" || msg[0] == "start") {
+        if (msg[0] == "yes" || msg[0] == "start" || msg[0] == "Yes" || msg[0] == "Start") {
           const user = await Translator.findOneAndUpdate(
             { number: from },
             {
@@ -323,7 +323,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
           res.status(201);
         }
         //user wants to start messages
-        else if (msg[0] == "stop") {
+        else if (msg[0] == "Stop" || msg[0] == "stop") {
           const user = await Translator.findOneAndUpdate(
             { number: from },
             {
@@ -551,7 +551,7 @@ const SendAutomatedMsg = async (req, res) => {
 
 setInterval(() => {
   SendAutomatedMsg();
-}, 10000);
+}, 30000);
 
 //@desc Sends WhatsApp Messages
 //@route POST google-sheets/send-whatsapp
