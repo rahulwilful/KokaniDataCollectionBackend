@@ -257,10 +257,6 @@ const VarifyToken = async (req, res) => {
   }
 };
 
-setInterval(() => {
-  SendAutomatedMsg();
-}, 10000);
-
 //@desc Receives Messages And Replies
 //@route POST google-sheets/webhook
 //@access Public
@@ -451,7 +447,7 @@ const SendAutomatedMsg = async (req, res) => {
     const checkLastCount = lastCount;
     console.log("last : ", last);
     console.log("LastCount : ", lastCount);
-
+    let dataIndex = 0;
     const rows = await googleSheetInstance.spreadsheets.values.get({
       spreadsheetId,
       range: `Sheet1!B${lastCount}:B`,
@@ -467,11 +463,11 @@ const SendAutomatedMsg = async (req, res) => {
     console.log(translators);
 
     for (let i in translators) {
-      console.log("data[i] : ", data[i], " number : ", translators[i].number);
+      console.log("data[i] : ", data[dataIndex], " number : ", translators[i].number);
       if (data[i]) {
         //check if answerd previous translation else send previos sentence
         if (translators[i].answerd == true && translators[i].stopped == false) {
-          let msg = data[i].toString();
+          let msg = data[dataIndex].toString();
 
           axios({
             method: "POST",
@@ -500,14 +496,8 @@ const SendAutomatedMsg = async (req, res) => {
             { new: true }
           );
 
-          /* const sentence = await Sentence.create({
-            translator_id: translators[i]._id,
-            sentence: msg,
-            translation: msg,
-            sentence_id: lastCount,
-          }); */
-
           lastCount = lastCount + 1;
+          dataIndex = dataIndex + 1;
         } else {
           if (translators[i].stopped == false) {
             const prevSentence = translators[i].sentence;
@@ -558,6 +548,10 @@ const SendAutomatedMsg = async (req, res) => {
     console.log({ error: err, message: "message sending faild" });
   }
 };
+
+setInterval(() => {
+  SendAutomatedMsg();
+}, 10000);
 
 //@desc Sends WhatsApp Messages
 //@route POST google-sheets/send-whatsapp
@@ -653,6 +647,7 @@ const InvalidFormatMSG2 = async (number) => {
   }
   return;
 };
+
 module.exports = {
   TestGoogleSheetsAPI,
   AddRow,
