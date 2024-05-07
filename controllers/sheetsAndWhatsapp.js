@@ -325,7 +325,6 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
           );
           console.log("Started message for Translator ", checkUser.name);
           res.status(201);
-          return;
         }
         //user wants to start messages
         else if (msg[0] == "stop") {
@@ -340,7 +339,6 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
           );
           console.log("Stopped message for Translator ", checkUser.name);
           res.status(201);
-          return;
         } else {
           const user = await Translator.findOneAndUpdate(
             { number: from },
@@ -353,20 +351,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
           );
           InvalidFormatMSG(from);
         }
-        /* axios({
-          method: "POST",
-          url: "https://graph.facebook.com/v13.0/" + phon_no_id + "/messages?access_token=" + token,
-          data: {
-            messaging_product: "whatsapp",
-            to: from,
-            text: {
-              body: " plzz provide valid translation in following format ( number , translation ) eg :- (2,भाषांतर) ",
-            },
-          },
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }); */
+
         console.log("invalid translation format");
         res.status(405);
         return;
@@ -386,7 +371,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
 
       //update user and sheet with translation
       if (msg[0] != 0 && isNum == true) {
-        if (checkUser._id && checkUser.sentence && msg[1] && checkUser.sentence_id) {
+        if (checkUser._id && checkUser.sentence_id && checkUser.sentence && msg[1] && checkUser.sentence_id == sentenceId) {
           const sentence = await Sentence.create({
             translator_id: checkUser._id,
             sentence: checkUser.sentence,
@@ -417,25 +402,13 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
               values: [[msg[1]]],
             },
           });
+
           console.log("Row Update Successfull : ");
         }
       } else {
         console.log("message[0] : ", msg[0], " message : ", msg);
         InvalidFormatMSG2(from);
-        /*   axios({
-          method: "POST",
-          url: "https://graph.facebook.com/v13.0/" + phon_no_id + "/messages?access_token=" + token,
-          data: {
-            messaging_product: "whatsapp",
-            to: from,
-            text: {
-              body: " plzz provide valide translation in following format ( number , translation ) eg :- (2,भाषांतर) ",
-            },
-          },
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }); */
+
         console.log("invalid translation format");
         res.status(405);
       }
