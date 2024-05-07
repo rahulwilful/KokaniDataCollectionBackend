@@ -464,7 +464,7 @@ const SendAutomatedMsg = async (req, res) => {
 
     for (let i in translators) {
       console.log("data[i] : ", data[dataIndex], " number : ", translators[i].number);
-      if (data[i]) {
+      if (data[dataIndex]) {
         //check if answerd previous translation else send previos sentence
         if (translators[i].answerd == true && translators[i].stopped == false) {
           let msg = data[dataIndex].toString();
@@ -551,7 +551,7 @@ const SendAutomatedMsg = async (req, res) => {
 
 setInterval(() => {
   SendAutomatedMsg();
-}, 30000);
+}, 10000);
 
 //@desc Sends WhatsApp Messages
 //@route POST google-sheets/send-whatsapp
