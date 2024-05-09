@@ -1,7 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const { body } = require("express-validator");
-const { TestGoogleSheetsAPI, AddRow, Delete, EditData, GetData, GetLastCount, ReceiveMessagesAndUpdateSheet, SendWhatsappMsg, VarifyToken } = require("../controllers/sheetsAndWhatsapp.js");
+
+const { TestGoogleSheetsAPI, AddRow, Delete, EditData, GetData, GetLastCount, ReceiveMessagesAndUpdateSheet, StopAndStartSendingMessages, SendWhatsappMsg, VarifyToken } = require("../controllers/sheetsAndWhatsapp.js");
 
 //@desc Test User API
 //@route GET google-sheets/
@@ -91,11 +92,12 @@ router.get(
 //@desc Receives Messages And Replies
 //@route POST google-sheets/webhook
 //@access Public
-router.post(
-  "/webhook",
+router.post("/webhook", ReceiveMessagesAndUpdateSheet);
 
-  ReceiveMessagesAndUpdateSheet
-);
+//@desc Stops And Starts Sending Messages
+//@route POST google-sheets/stop-sending-messages
+//@access Public
+router.post("/stop-sending-messages", StopAndStartSendingMessages);
 
 //@desc Sends WhatsApp Messages
 //@route POST google-sheets/get-last-count

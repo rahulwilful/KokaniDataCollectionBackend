@@ -28,7 +28,7 @@ const addTranslator = async (req, res) => {
 const getAllTranslators = async (req, res) => {
   try {
     // Retrieve all translators from the database
-    const translators = await Translator.find();
+    const translators = await Translator.find({ active: true });
     console.log(translators);
     res.status(200).json(translators);
   } catch (error) {
@@ -63,29 +63,10 @@ const updateTranslator = async (req, res) => {
   }
 };
 
-// Controller function to handle deleting a translator
-const deleteTranslator = async (req, res) => {
-  try {
-    // Extract translator ID from request body
-    const { translatorId } = req.body;
-
-    // Find the translator by ID and delete it
-    await Translator.findByIdAndDelete(translatorId);
-
-    res.status(200).json({ message: "Translator deleted successfully" });
-  } catch (error) {
-    console.error("Error deleting translator:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-};
-
-// Controller function to handle retrieving a translator by ID
 const getTranslatorById = async (req, res) => {
   try {
-    // Extract translator ID from request body
     const { translatorId } = req.body;
 
-    // Find the translator by ID
     const translator = await Translator.findById(req.params.id);
 
     console.log(" Translator ", translator);
@@ -101,10 +82,71 @@ const getTranslatorById = async (req, res) => {
   }
 };
 
+const toggleMessageSendingOfUser = async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const translator = await Translator.findById(id);
+
+    console.log("translator", translator);
+    if (!Translator) {
+      return res.status(404).json({ message: "Translator not found" });
+    }
+
+    const updatedTranslator = await Translator.findOneAndUpdate(
+      {
+        _id: translator._id,
+      },
+      {
+        stopped: !translator.stopped,
+      },
+      {
+        new: true,
+      }
+    );
+
+    res.status(200).json({ message: "Translator updated successfully", translator: updatedTranslator });
+  } catch (error) {
+    console.error("Error updating translator:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const deleteTranslator = async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const translator = await Translator.findById(id);
+
+    console.log("translator", translator);
+    if (!Translator) {
+      return res.status(404).json({ message: "Translator not found" });
+    }
+
+    const deletedTranslator = await Translator.findOneAndUpdate(
+      {
+        _id: translator._id,
+      },
+      {
+        active: false,
+      },
+      {
+        new: true,
+      }
+    );
+
+    res.status(200).json({ message: "Translator Deleted successfully", translator: deletedTranslator });
+  } catch (error) {
+    console.error("Error updating translator:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 module.exports = {
   addTranslator,
   getAllTranslators,
   updateTranslator,
   deleteTranslator,
   getTranslatorById,
+  toggleMessageSendingOfUser,
 };

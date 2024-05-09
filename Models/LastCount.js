@@ -7,6 +7,10 @@ const lastCountSchema = new Schema({
     type: Number,
     default: 0,
   },
+  startSendingMessages: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 module.exports = mongoose.model("LastCount", lastCountSchema);

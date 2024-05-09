@@ -229,7 +229,7 @@ const Delete = async (req, res) => {
   }
 };
 
-//@desc Varifyies Backend Url in Configuration At Meta For Developers
+//@desc Varifyies Backend Url in Configuration At "Meta For Developers"
 //@route GET google-sheets/webhook
 //@access Public
 const VarifyToken = async (req, res) => {
@@ -269,7 +269,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
     auth: authClientObject,
   });
 
-  //////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
   let body_param = req.body;
 
   console.log(JSON.stringify(body_param, null, 2));
@@ -333,6 +333,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
               new: true,
             }
           );
+
           console.log("Stopped message for Translator ", checkUser.name);
           res.status(201);
         } else {
@@ -416,7 +417,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
   }
 };
 
-//@desc Receives Messages And Replies
+//@desc Send Automated Messages
 //@route POST google-sheets/webhook
 //@access Public
 const SendAutomatedMsg = async (req, res) => {
@@ -468,7 +469,6 @@ const SendAutomatedMsg = async (req, res) => {
         //check if answerd previous translation else send previos sentence
         if (translators[i].answerd == true && translators[i].stopped == false) {
           let msg = data[dataIndex].toString();
-
           axios({
             method: "POST",
             url: "https://graph.facebook.com/v13.0/" + phone_id + "/messages?access_token=" + token,
@@ -549,8 +549,13 @@ const SendAutomatedMsg = async (req, res) => {
   }
 };
 
-setInterval(() => {
-  SendAutomatedMsg();
+setInterval(async () => {
+  const last = await LastCount.find();
+  console.log("last", last);
+  const startSendingMessages = last[0].startSendingMessages;
+  if (startSendingMessages == true) {
+    SendAutomatedMsg();
+  }
 }, 10000);
 
 //@desc Sends WhatsApp Messages
@@ -648,6 +653,41 @@ const InvalidFormatMSG2 = async (number) => {
   return;
 };
 
+//@desc Stops And Starts Sending Messages
+//@route GET google-sheets/stop-sending-messages
+//@access Public
+const StopAndStartSendingMessages = async (req, res) => {
+  const errors = validationResult(req);
+  const ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+
+  if (!errors.isEmpty()) {
+    // logger.error(`${ip}: API /api/v1/user/add  responnded with Error `);
+    return res.status(400).json({ errors: errors.array() });
+  }
+  const data = matchedData(req);
+
+  try {
+    let lastCount = await LastCount.find();
+    console.log("lastCount", lastCount[0]);
+    const id = lastCount[0]._id;
+    const startSendingMessages = lastCount[0].startSendingMessages;
+    lastCount = await LastCount.findOneAndUpdate(
+      { _id: id },
+      {
+        startSendingMessages: !startSendingMessages,
+      },
+      { new: true }
+    );
+
+    console.log("updatedLastCount", lastCount);
+
+    return res.status(200).json({ result: lastCount });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: error });
+  }
+};
+
 module.exports = {
   TestGoogleSheetsAPI,
   AddRow,
@@ -659,4 +699,5 @@ module.exports = {
   SendWhatsappMsg,
   SendAutomatedMsg,
   GetLastCount,
+  StopAndStartSendingMessages,
 };

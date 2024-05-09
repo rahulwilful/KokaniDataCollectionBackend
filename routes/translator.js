@@ -1,7 +1,7 @@
 const express = require("express");
 const routes = express.Router();
 const { body } = require("express-validator");
-const { addTranslator, getAllTranslators, updateTranslator, getTranslatorById } = require("../controllers/translator");
+const { addTranslator, deleteTranslator, getAllTranslators, updateTranslator, toggleMessageSendingOfUser, getTranslatorById } = require("../controllers/translator");
 
 //@desc Create User API
 //@route POST translator/add
@@ -41,7 +41,12 @@ routes.post(
 //@desc Delete User API
 //@route POST translator/delete
 //@access Public
-routes.post("/delete");
+routes.delete("/delete/:id", deleteTranslator);
+
+//@desc Delete User API
+//@route POST translator/delete
+//@access Public
+routes.post("/toggle-messages-sending-of-user/:id", toggleMessageSendingOfUser);
 
 //@desc Get User By Id  API
 //@route POST translator/get_by_id
