@@ -50,6 +50,7 @@ const createSuperUser = async (req, res) => {
     name: data.name,
     email: data.email,
     password: securedPass,
+    whatsapp_no: data.whatsapp_no,
   })
     .then((user) => {
       logger.info(`${ip}: API /api/v1/user/add | User: ${user.name} | responnded with Success `);
@@ -89,8 +90,8 @@ const createUser = async (req, res) => {
     await User.create({
       name: data.name,
       email: data.email,
-
       password: securedPass,
+      whatsapp_no: data.whatsapp_no,
     })
       .then((user) => {
         logger.info(`${ip}: API /api/v1/user/add | User: ${user.name} | responnded with Success `);

@@ -21,6 +21,9 @@ router.post(
     body("password", "Password must have atlest 5 character").isLength({
       min: 5,
     }),
+    body("whatsapp_no", "whatsapp_no must have atlest 10 digits").isLength({
+      min: 10,
+    }),
   ],
   createSuperUser
 );
@@ -35,6 +38,9 @@ router.post(
     body("email", "Enter a Valid Email").isEmail(),
     body("password", "Password must have atlest 5 character").isLength({
       min: 5,
+    }),
+    body("whatsapp_no", "whatsapp_no must have atlest 10 digits").isLength({
+      min: 10,
     }),
   ],
   validateToken,

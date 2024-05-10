@@ -17,7 +17,10 @@ const UserSchema = new Schema({
     type: String,
     required: true,
   },
-
+  whatsapp_no: {
+    type: Number,
+    required: true,
+  },
   createDate: {
     type: Date,
     default: Date.now,
