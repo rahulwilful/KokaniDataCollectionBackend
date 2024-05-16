@@ -308,7 +308,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
       //check if translation message is present
       if (!msg[1]) {
         //If Users Wants to stop messages
-        if (msg[0] == "yes" || msg[0] == "start" || msg[0] == "Yes" || msg[0] == "Start") {
+        if (msg[0] == "start" || msg[0] == "Start") {
           const user = await Translator.findOneAndUpdate(
             { number: from },
             {
@@ -319,6 +319,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
               new: true,
             }
           );
+          replyForStartMSG(from);
           console.log("Started message for Translator ", checkUser.name);
           res.status(201);
         }
@@ -333,7 +334,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
               new: true,
             }
           );
-
+          replyForStopMSG(from);
           console.log("Stopped message for Translator ", checkUser.name);
           res.status(201);
         } else {
@@ -641,6 +642,52 @@ const InvalidFormatMSG2 = async (number) => {
         to: number,
         text: {
           body: "InvalidFormatMSG2 plzz provide valide translation in following format ( number , translation ) eg :- (2,भाषांतर) ",
+        },
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  } catch (error) {
+    console.error("error : ", error);
+  }
+  return;
+};
+
+const replyForStartMSG = async (number) => {
+  console.log("InvalidFormatMSG");
+  try {
+    await axios({
+      method: "POST",
+      url: "https://graph.facebook.com/v13.0/" + phone_id + "/messages?access_token=" + token,
+      data: {
+        messaging_product: "whatsapp",
+        to: number,
+        text: {
+          body: " We have started messages and from today you will receive 1 sentence per day ",
+        },
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  } catch (error) {
+    console.error("error : ", error);
+  }
+  return;
+};
+
+const replyForStopMSG = async (number) => {
+  console.log("InvalidFormatMSG");
+  try {
+    await axios({
+      method: "POST",
+      url: "https://graph.facebook.com/v13.0/" + phone_id + "/messages?access_token=" + token,
+      data: {
+        messaging_product: "whatsapp",
+        to: number,
+        text: {
+          body: " We have stopped the messages and you will not receive messages from now on . If you want to continue in future just message 'Start' ",
         },
       },
       headers: {
