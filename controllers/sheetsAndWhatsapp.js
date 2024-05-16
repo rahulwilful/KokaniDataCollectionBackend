@@ -664,7 +664,7 @@ const replyForStartMSG = async (number) => {
         messaging_product: "whatsapp",
         to: number,
         text: {
-          body: " We have started messages and from today you will receive 1 sentence per day ",
+          body: " We have started messages for your number, And from today you will receive 1 sentence per day ",
         },
       },
       headers: {
