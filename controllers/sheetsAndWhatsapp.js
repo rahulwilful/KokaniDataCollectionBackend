@@ -314,9 +314,6 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
             {
               stopped: false,
               firstReply: true,
-            },
-            {
-              new: true,
             }
           );
           //replyForStartMSG(from);
@@ -345,27 +342,26 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
             { number: from },
             {
               stopped: true,
-            },
-            {
-              new: true,
             }
           );
           //replyForStopMSG(from);
 
-          const stop = await axios({
-            method: "POST",
-            url: "https://graph.facebook.com/v13.0/" + phone_id + "/messages?access_token=" + token,
-            data: {
-              messaging_product: "whatsapp",
-              to: from,
-              text: {
-                body: " We have stopped the messages and you will not receive messages from now on . If you want to continue in future just message 'Start' ",
+          if (user.stopped == false) {
+            const stop = await axios({
+              method: "POST",
+              url: "https://graph.facebook.com/v13.0/" + phone_id + "/messages?access_token=" + token,
+              data: {
+                messaging_product: "whatsapp",
+                to: from,
+                text: {
+                  body: " We have stopped the messages and you will not receive messages from now on . If you want to continue in future just message 'Start' ",
+                },
               },
-            },
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }).catch((error) => console.log("error : ", error));
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }).catch((error) => console.log("error : ", error));
+          }
 
           console.log("Stopped message for Translator ", checkUser.name);
           res.status(201);
