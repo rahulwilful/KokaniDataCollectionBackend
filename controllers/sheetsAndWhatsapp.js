@@ -319,7 +319,23 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
               new: true,
             }
           );
-          replyForStartMSG(from);
+          //replyForStartMSG(from);
+
+          const start = await axios({
+            method: "POST",
+            url: "https://graph.facebook.com/v13.0/" + phone_id + "/messages?access_token=" + token,
+            data: {
+              messaging_product: "whatsapp",
+              to: from,
+              text: {
+                body: "  We have started messages for your number, And from today you will receive 1 sentence per day ",
+              },
+            },
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }).catch((error) => console.log("error : ", error));
+
           console.log("Started message for Translator ", checkUser.name);
           res.status(201);
         }
@@ -334,7 +350,23 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
               new: true,
             }
           );
-          replyForStopMSG(from);
+          //replyForStopMSG(from);
+
+          const stop = await axios({
+            method: "POST",
+            url: "https://graph.facebook.com/v13.0/" + phone_id + "/messages?access_token=" + token,
+            data: {
+              messaging_product: "whatsapp",
+              to: from,
+              text: {
+                body: " We have stopped the messages and you will not receive messages from now on . If you want to continue in future just message 'Start' ",
+              },
+            },
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }).catch((error) => console.log("error : ", error));
+
           console.log("Stopped message for Translator ", checkUser.name);
           res.status(201);
         } else {
@@ -347,7 +379,21 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
               new: true,
             }
           );
-          InvalidFormatMSG(from);
+          //InvalidFormatMSG(from);
+          const invalidFomat = await axios({
+            method: "POST",
+            url: "https://graph.facebook.com/v13.0/" + phone_id + "/messages?access_token=" + token,
+            data: {
+              messaging_product: "whatsapp",
+              to: number,
+              text: {
+                body: "InvalidFormatMSG plzz provide valide translation in following format ( number , translation ) eg :- (2,भाषांतर) ",
+              },
+            },
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }).catch((error) => console.log("error: ", error));
         }
 
         console.log("invalid translation format");
