@@ -383,7 +383,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
               messaging_product: "whatsapp",
               to: from,
               text: {
-                body: "  Invalid Format: \n Please provide a valid translation in the following format: \n Number ID,Translation \n Example: 2,भाषांतर ",
+                body: "  Invalid Format: \nPlease provide a valid translation in the following format: \n\nNumber ID,Translation \n\nExample: 2,भाषांतर ",
               },
             },
             headers: {
