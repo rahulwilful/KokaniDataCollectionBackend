@@ -14,6 +14,17 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*"); // Allows all origins, can be restricted to specific domains
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  next();
+});
+
+app.options("*", (req, res) => {
+  res.send();
+});
+
 app.use(bodyParser.json());
 
 const phone_id = process.env.PHONE_NUMBER_ID;
