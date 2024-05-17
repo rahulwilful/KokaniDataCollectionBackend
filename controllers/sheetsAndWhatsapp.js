@@ -381,7 +381,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
             url: "https://graph.facebook.com/v13.0/" + phone_id + "/messages?access_token=" + token,
             data: {
               messaging_product: "whatsapp",
-              to: number,
+              to: from,
               text: {
                 body: "InvalidFormatMSG plzz provide valide translation in following format ( number , translation ) eg :- (2,भाषांतर) ",
               },
@@ -459,6 +459,15 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
     }
   }
 };
+
+setInterval(async () => {
+  const last = await LastCount.find();
+  console.log("last", last);
+  const startSendingMessages = last[0].startSendingMessages;
+  if (startSendingMessages == true) {
+    SendAutomatedMsg();
+  }
+}, 60000);
 
 //@desc Send Automated Messages
 //@route POST google-sheets/webhook
@@ -591,15 +600,6 @@ const SendAutomatedMsg = async (req, res) => {
     console.log({ error: err, message: "message sending faild" });
   }
 };
-
-setInterval(async () => {
-  const last = await LastCount.find();
-  console.log("last", last);
-  const startSendingMessages = last[0].startSendingMessages;
-  if (startSendingMessages == true) {
-    SendAutomatedMsg();
-  }
-}, 10000);
 
 //@desc Sends WhatsApp Messages
 //@route POST google-sheets/send-whatsapp
