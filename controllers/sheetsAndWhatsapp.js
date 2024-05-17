@@ -385,9 +385,9 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
             },
             data: {
               messaging_product: "whatsapp",
-              to: data.number || "+91 9767589256",
-              type: data.template || "template",
-              template: { name: "first_message3", language: { code: "en" } },
+              to: from,
+              type: "template",
+              template: { name: "invalid_format", language: { code: "en" } },
             },
           };
           const invalidFormat = axios.request(options).catch((error) => console.log("error: ", error));
