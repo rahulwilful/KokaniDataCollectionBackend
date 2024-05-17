@@ -389,7 +389,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
             data: {
               messaging_product: "whatsapp",
               to: from,
-              type: "template",
+              type: "Marketing",
               template: { name: "invalid_format", language: { code: "en" } },
             },
             headers: {
