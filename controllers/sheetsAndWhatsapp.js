@@ -376,21 +376,20 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
             }
           );
           //InvalidFormatMSG(from);
-          var options = {
+          const invalidFomat = await axios({
             method: "POST",
-            url: `https://graph.facebook.com/v15.0/${phone_id}/messages`,
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
+            url: "https://graph.facebook.com/v13.0/" + phone_id + "/messages?access_token=" + token,
             data: {
               messaging_product: "whatsapp",
               to: from,
-              type: "template",
-              template: { name: "invalid_format", language: { code: "en" } },
+              text: {
+                body: "  Invalid Format: \n Please provide a valid translation in the following format: \n Number ID,Translation \n Example: 2,भाषांतर ",
+              },
             },
-          };
-          const invalidFormat = axios.request(options).catch((error) => console.log("error: ", error));
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }).catch((error) => console.log("error: ", error));
         }
 
         console.log("invalid translation format");
