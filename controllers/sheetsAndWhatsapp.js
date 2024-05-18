@@ -621,8 +621,8 @@ const SendWhatsappMsg = async (req, res) => {
       data: {
         messaging_product: "whatsapp",
         to: data.number || "+91 9767589256",
-        type: data.template || "template",
-        template: { name: "first_message3", language: { code: "en" } },
+        type: "template",
+        template: { name: "first_message", language: { code: "en_UK" } },
       },
     };
 
