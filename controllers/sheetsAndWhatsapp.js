@@ -306,7 +306,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
       }
 
       //check if translation message is present
-      if (!msg[1]) {
+      if (!msg[1] && !msg[0]) {
         //If Users Wants to stop messages
         if (msg[0] == "start" || msg[0] == "Start") {
           const user = await Translator.findOneAndUpdate(
