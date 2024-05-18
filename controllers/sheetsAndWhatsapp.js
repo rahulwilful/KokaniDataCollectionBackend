@@ -462,12 +462,12 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
 
 setInterval(async () => {
   const last = await LastCount.find();
-  console.log("last", last);
+  //console.log("last", last);
   const startSendingMessages = last[0].startSendingMessages;
   if (startSendingMessages == true) {
     SendAutomatedMsg();
   }
-}, 60000);
+}, 10000);
 
 //@desc Send Automated Messages
 //@route POST google-sheets/webhook
