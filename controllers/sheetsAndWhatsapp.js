@@ -306,7 +306,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
       }
 
       //check if translation message is present
-      if (!msg[1] && !msg[0]) {
+      if (!msg[1] && msg[0]) {
         //If Users Wants to stop messages
         if (msg[0] == "start" || msg[0] == "Start") {
           const user = await Translator.findOneAndUpdate(
@@ -683,7 +683,7 @@ const InvalidFormatMSG2 = async (number) => {
         messaging_product: "whatsapp",
         to: number,
         text: {
-          body: "InvalidFormatMSG2 plzz provide valide translation in following format ( number , translation ) eg :- (2,भाषांतर) ",
+          body: " Invalid Format: \nPlease provide a valid translation in the following format: \n\nNumber ID,Translation \n\nExample: 3,भाषांतर  ",
         },
       },
       headers: {
