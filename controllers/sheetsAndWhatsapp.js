@@ -622,7 +622,7 @@ const SendWhatsappMsg = async (req, res) => {
         messaging_product: "whatsapp",
         to: data.number || "+91 9767589256",
         type: "template",
-        template: { name: "first_message", language: { code: "en_UK" } },
+        template: { name: "hello_world", language: { code: "en_US" } },
       },
     };
 
