@@ -14,7 +14,7 @@ const getAllSentences = async (req, res) => {
 const getSentenceById = async (req, res) => {
   try {
     const id = req.params.id;
-
+    
     const sentence = await Sentence.findById(req.params.id).populate({ path: "translator_id" });
 
     console.log(" Sentence ", Sentence);

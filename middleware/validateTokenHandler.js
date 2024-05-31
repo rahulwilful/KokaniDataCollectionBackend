@@ -9,7 +9,7 @@ const validateToken = async (req, res, next) => {
 
     const currentDate = new Date().toISOString().split("T")[0];
 
-    const loginRestrictionDate = new Date("2024-05-20").toISOString().split("T")[0];
+    const loginRestrictionDate = new Date("2025-05-20").toISOString().split("T")[0];
     if (currentDate <= loginRestrictionDate) {
       if (!authHeader) {
         return res.status(401).json({ message: "User token not found" });
