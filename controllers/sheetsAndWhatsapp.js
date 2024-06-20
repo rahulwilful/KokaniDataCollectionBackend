@@ -467,7 +467,7 @@ setInterval(async () => {
   if (startSendingMessages == true) {
     SendAutomatedMsg();
   }
-}, 10000);
+}, 60000);
 
 //@desc Send Automated Messages
 //@route POST google-sheets/webhook
