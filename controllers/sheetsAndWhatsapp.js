@@ -292,8 +292,8 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
 
       let firstPart = parts.shift();
       let remainingString = parts.join(",");
-      msg[0] = firstPart;
-      msg[1] = remainingString;
+      msg[0] = firstPart; //sentenceID
+      msg[1] = remainingString; //translated sentence
 
       console.log("msg[0] : ", msg[0], " msg[1] : ", msg[1]);
 
@@ -334,6 +334,9 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
           }).catch((error) => console.log("error : ", error));
 
           console.log("Started message for Translator ", checkUser.name);
+          msg_body = NULL;
+          msg[0] = NULL;
+          msg[1] = NULL;
           res.status(201);
         }
         //user wants to start messages
@@ -362,7 +365,9 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
               },
             }).catch((error) => console.log("error : ", error));
           }
-
+          msg_body = NULL;
+          msg[0] = NULL;
+          msg[1] = NULL;
           console.log("Stopped message for Translator ", checkUser.name);
           res.status(201);
         } else {
@@ -392,6 +397,9 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
           }).catch((error) => console.log("error: ", error));
         }
 
+        msg_body = NULL;
+        msg[0] = NULL;
+        msg[1] = NULL;
         console.log("invalid translation format");
         res.status(405);
         return;
@@ -443,18 +451,29 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
             },
           });
 
+          msg_body = NULL;
+          msg[0] = NULL;
+          msg[1] = NULL;
           console.log("Row Update Successfull : ");
         }
       } else {
+        msg_body = NULL;
+        msg[0] = NULL;
+        msg[1] = NULL;
         console.log("message[0] : ", msg[0], " message : ", msg);
         InvalidFormatMSG2(from);
 
         console.log("invalid translation format");
         res.status(405);
       }
-
+      msg_body = NULL;
+      msg[0] = NULL;
+      msg[1] = NULL;
       res.status(200);
     } else {
+      msg_body = NULL;
+      msg[0] = NULL;
+      msg[1] = NULL;
       res.status(404);
     }
   }
