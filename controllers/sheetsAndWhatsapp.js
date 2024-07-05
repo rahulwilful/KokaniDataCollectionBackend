@@ -683,7 +683,7 @@ const InvalidFormatMSG2 = async (number) => {
         messaging_product: "whatsapp",
         to: number,
         text: {
-          body: " Invalid Format: \nPlease provide a valid translation in the following format: \n\nNumber ID,Translation \n\nExample: 3,भाषांतर  ",
+          body: " Invalid Format: \nPlease provide a valid translation in the following format: \n\nNumber ID,Translation \n\nExample: 3,भाषांतर .\n\n Even check you are typing valid Number ID  ",
         },
       },
       headers: {
