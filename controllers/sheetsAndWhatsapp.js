@@ -334,9 +334,10 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
           }).catch((error) => console.log("error : ", error));
 
           console.log("Started message for Translator ", checkUser.name);
-          msg_body = NULL;
-          msg[0] = NULL;
-          msg[1] = NULL;
+          msg_body = "";
+          msg[0] = "";
+          msg[1] = "";
+          phon_no_id = "";
           res.status(201);
         }
         //user wants to start messages
@@ -365,9 +366,10 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
               },
             }).catch((error) => console.log("error : ", error));
           }
-          msg_body = NULL;
-          msg[0] = NULL;
-          msg[1] = NULL;
+          msg_body = "";
+          msg[0] = "";
+          msg[1] = "";
+          phon_no_id = "";
           console.log("Stopped message for Translator ", checkUser.name);
           res.status(201);
         } else {
@@ -451,9 +453,10 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
             },
           });
 
-          msg_body = NULL;
-          msg[0] = NULL;
-          msg[1] = NULL;
+          msg_body = "";
+          msg[0] = "";
+          msg[1] = "";
+          phon_no_id = "";
           console.log("Row Update Successfull : ");
         }
       } else {
