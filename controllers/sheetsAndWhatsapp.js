@@ -477,10 +477,6 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
       phon_no_id = "";
       res.status(200);
     } else {
-      msg_body = "";
-      msg[0] = "";
-      msg[1] = "";
-      phon_no_id = "";
       res.status(404);
     }
   }
