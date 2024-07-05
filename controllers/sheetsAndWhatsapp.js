@@ -611,10 +611,6 @@ const SendWhatsappMsg = async (req, res) => {
   console.log("data : ", data);
 
   try {
-    if (!data.number) {
-      res.status(400).json({ success: false, message: "Number not found in request" });
-    }
-
     var options = {
       method: "POST",
       url: `https://graph.facebook.com/v15.0/${phone_id}/messages`,
@@ -626,7 +622,7 @@ const SendWhatsappMsg = async (req, res) => {
         messaging_product: "whatsapp",
         to: data.number,
         type: "template",
-        template: { name: "first_message3", language: { code: "en_US" } },
+        template: { name: "first_message3", language: { code: "en" } },
       },
     };
 
