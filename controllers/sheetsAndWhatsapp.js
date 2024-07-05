@@ -399,9 +399,10 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
           }).catch((error) => console.log("error: ", error));
         }
 
-        msg_body = NULL;
-        msg[0] = NULL;
-        msg[1] = NULL;
+        msg_body = "";
+        msg[0] = "";
+        msg[1] = "";
+        phon_no_id = "";
         console.log("invalid translation format");
         res.status(405);
         return;
@@ -460,23 +461,26 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
           console.log("Row Update Successfull : ");
         }
       } else {
-        msg_body = NULL;
-        msg[0] = NULL;
-        msg[1] = NULL;
+        msg_body = "";
+        msg[0] = "";
+        msg[1] = "";
+        phon_no_id = "";
         console.log("message[0] : ", msg[0], " message : ", msg);
         InvalidFormatMSG2(from);
 
         console.log("invalid translation format");
         res.status(405);
       }
-      msg_body = NULL;
-      msg[0] = NULL;
-      msg[1] = NULL;
+      msg_body = "";
+      msg[0] = "";
+      msg[1] = "";
+      phon_no_id = "";
       res.status(200);
     } else {
-      msg_body = NULL;
-      msg[0] = NULL;
-      msg[1] = NULL;
+      msg_body = "";
+      msg[0] = "";
+      msg[1] = "";
+      phon_no_id = "";
       res.status(404);
     }
   }
