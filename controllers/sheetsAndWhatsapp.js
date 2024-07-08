@@ -302,7 +302,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
       //check if the user is valid
       if (!checkUser) {
         console.log("unauthorised translator");
-        res.status(404);
+        return res.status(404);
       }
 
       //check if translation message is present
@@ -338,7 +338,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
           msg[0] = "";
           msg[1] = "";
           phon_no_id = "";
-          res.status(201);
+          return res.status(201);
         }
         //user wants to stop messages
         else if (msg[0] == "Stop" || msg[0] == "stop") {
@@ -371,7 +371,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
           msg[1] = "";
           phon_no_id = "";
           console.log("Stopped message for Translator ", checkUser.name);
-          res.status(201);
+          return res.status(201);
         } else {
           const user = await Translator.findOneAndUpdate(
             { number: from },
@@ -404,8 +404,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
         msg[1] = "";
         phon_no_id = "";
         console.log("invalid translation format");
-        res.status(405);
-        return;
+        return res.status(405);
       }
 
       //check if msg[0] is an intiger and not '0' as well else send invalid format message
@@ -459,6 +458,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
           msg[1] = "";
           phon_no_id = "";
           console.log("Row Update Successfull : ");
+          return res.status(200);
         }
       } else {
         msg_body = "";
@@ -469,15 +469,15 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
         InvalidFormatMSG2(from);
 
         console.log("invalid translation format");
-        res.status(405);
+        return res.status(405);
       }
       msg_body = "";
       msg[0] = "";
       msg[1] = "";
       phon_no_id = "";
-      res.status(200);
+      return res.status(200);
     } else {
-      res.status(404);
+      return res.status(404);
     }
   }
 };
@@ -672,29 +672,6 @@ const GetLastCount = async (req, res) => {
   }
 };
 
-const InvalidFormatMSG = async (number) => {
-  console.log("InvalidFormatMSG");
-  try {
-    await axios({
-      method: "POST",
-      url: "https://graph.facebook.com/v13.0/" + phone_id + "/messages?access_token=" + token,
-      data: {
-        messaging_product: "whatsapp",
-        to: number,
-        text: {
-          body: "InvalidFormatMSG plzz provide valide translation in following format ( number , translation ) eg :- (2,भाषांतर) ",
-        },
-      },
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-  } catch (error) {
-    console.error("error : ", error);
-  }
-  return;
-};
-
 const InvalidFormatMSG2 = async (number) => {
   console.log("InvalidFormatMSG2");
   try {
@@ -718,52 +695,6 @@ const InvalidFormatMSG2 = async (number) => {
   }
   return;
 };
-
-/* const replyForStartMSG = async (number) => {
-  console.log("InvalidFormatMSG");
-  try {
-    await axios({
-      method: "POST",
-      url: "https://graph.facebook.com/v13.0/" + phone_id + "/messages?access_token=" + token,
-      data: {
-        messaging_product: "whatsapp",
-        to: number,
-        text: {
-          body: " We have started messages for your number, And from today you will receive 1 sentence per day ",
-        },
-      },
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-  } catch (error) {
-    console.error("error : ", error);
-  }
-  return;
-}; */
-
-/* const replyForStopMSG = async (number) => {
-  console.log("InvalidFormatMSG");
-  try {
-    await axios({
-      method: "POST",
-      url: "https://graph.facebook.com/v13.0/" + phone_id + "/messages?access_token=" + token,
-      data: {
-        messaging_product: "whatsapp",
-        to: number,
-        text: {
-          body: " We have stopped the messages and you will not receive messages from now on . If you want to continue in future just message 'Start' ",
-        },
-      },
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-  } catch (error) {
-    console.error("error : ", error);
-  }
-  return;
-}; */
 
 //@desc Stops And Starts Sending Messages
 //@route GET google-sheets/stop-sending-messages
