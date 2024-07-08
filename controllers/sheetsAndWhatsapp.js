@@ -541,7 +541,7 @@ const SendAutomatedMsg = async (req, res) => {
       console.log("data[i] : ", data[dataIndex], " number : ", translators[i].number);
       if (data[dataIndex]) {
         //check if answerd previous translation else send previos sentence
-        if (translators[i].answerd == true && translators[i].stopped == false) {
+        if (translators[i].answerd == true && translators[i].stopped == false && translators[i].active == true) {
           let msg = data[dataIndex].toString();
           axios({
             method: "POST",
@@ -650,10 +650,10 @@ const SendWhatsappMsg = async (req, res) => {
 
     const response = await axios.request(options);
     console.log("Message sent successfully:", response.data);
-    res.status(200).json({ success: true, message: "Message sent successfully" });
+    return res.status(200).json({ success: true, message: "Message sent successfully" });
   } catch (error) {
     console.error("Error sending message:", error);
-    res.status(500).json({ success: false, message: "Error sending message" });
+    return res.status(500).json({ success: false, message: "Error sending message" });
   }
 };
 
@@ -666,7 +666,7 @@ const GetLastCount = async (req, res) => {
     console.log("result : ", lastCount);
     const lastCount2 = lastCount[0].lastCount;
     console.log("lastCount : ", lastCount2);
-    res.status(201).json({ result: lastCount });
+    return res.status(201).json({ result: lastCount });
   } catch (error) {
     res.status(500).json({ message: "something went wrong" });
   }
