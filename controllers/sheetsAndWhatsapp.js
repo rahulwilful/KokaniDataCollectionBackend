@@ -340,7 +340,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
           phon_no_id = "";
           res.status(201);
         }
-        //user wants to start messages
+        //user wants to stop messages
         else if (msg[0] == "Stop" || msg[0] == "stop") {
           const user = await Translator.findOneAndUpdate(
             { number: from },
@@ -712,13 +712,14 @@ const InvalidFormatMSG2 = async (number) => {
         "Content-Type": "application/json",
       },
     });
+    number = "";
   } catch (error) {
     console.error("error : ", error);
   }
   return;
 };
 
-const replyForStartMSG = async (number) => {
+/* const replyForStartMSG = async (number) => {
   console.log("InvalidFormatMSG");
   try {
     await axios({
@@ -739,9 +740,9 @@ const replyForStartMSG = async (number) => {
     console.error("error : ", error);
   }
   return;
-};
+}; */
 
-const replyForStopMSG = async (number) => {
+/* const replyForStopMSG = async (number) => {
   console.log("InvalidFormatMSG");
   try {
     await axios({
@@ -762,7 +763,7 @@ const replyForStopMSG = async (number) => {
     console.error("error : ", error);
   }
   return;
-};
+}; */
 
 //@desc Stops And Starts Sending Messages
 //@route GET google-sheets/stop-sending-messages
