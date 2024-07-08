@@ -574,7 +574,7 @@ const SendAutomatedMsg = async (req, res) => {
           lastCount = lastCount + 1;
           dataIndex = dataIndex + 1;
         } else {
-          if (translators[i].stopped == false) {
+          if (translators[i].stopped == false && translators[i].active == true) {
             const prevSentence = translators[i].sentence;
             const sentence_id = translators[i].sentence_id;
             axios({
