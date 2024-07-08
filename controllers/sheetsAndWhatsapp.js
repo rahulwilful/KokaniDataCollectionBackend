@@ -302,7 +302,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
       //check if the user is valid
       if (!checkUser) {
         console.log("unauthorised translator");
-        res.status(404);
+        return res.status(404);
       }
 
       //check if translation message is present
@@ -325,7 +325,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
               messaging_product: "whatsapp",
               to: from,
               text: {
-                body: "  We have started messages for your number, And from today you will receive 1 sentence per day ",
+                body: "We have started messages for your number, And from today you will receive 1 sentence per day.\nThank You. ",
               },
             },
             headers: {
@@ -338,7 +338,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
           msg[0] = "";
           msg[1] = "";
           phon_no_id = "";
-          res.status(201);
+          return res.status(201);
         }
         //user wants to stop messages
         else if (msg[0] == "Stop" || msg[0] == "stop") {
@@ -358,7 +358,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
                 messaging_product: "whatsapp",
                 to: from,
                 text: {
-                  body: " We have stopped the messages and you will not receive messages from now on . If you want to continue in future just message 'Start' ",
+                  body: "We have stopped the messages and you will not receive messages from now on . If you want to continue in future just message 'Start' ",
                 },
               },
               headers: {
@@ -371,7 +371,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
           msg[1] = "";
           phon_no_id = "";
           console.log("Stopped message for Translator ", checkUser.name);
-          res.status(201);
+          return res.status(201);
         } else {
           const user = await Translator.findOneAndUpdate(
             { number: from },
@@ -390,7 +390,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
               messaging_product: "whatsapp",
               to: from,
               text: {
-                body: "  Invalid Format: \nPlease provide a valid translation in the following format: \n\nNumber ID,Translation \n\nExample: 2,भाषांतर ",
+                body: "Invalid Format: \nPlease provide a valid translation in the following format: \n\nNumber ID,Translation \n\nExample: 2,भाषांतर ",
               },
             },
             headers: {
@@ -404,8 +404,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
         msg[1] = "";
         phon_no_id = "";
         console.log("invalid translation format");
-        res.status(405);
-        return;
+        return res.status(405);
       }
 
       //check if msg[0] is an intiger and not '0' as well else send invalid format message
@@ -459,6 +458,7 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
           msg[1] = "";
           phon_no_id = "";
           console.log("Row Update Successfull : ");
+          return res.status(200);
         }
       } else {
         msg_body = "";
@@ -469,15 +469,15 @@ const ReceiveMessagesAndUpdateSheet = async (req, res) => {
         InvalidFormatMSG2(from);
 
         console.log("invalid translation format");
-        res.status(405);
+        return res.status(405);
       }
       msg_body = "";
       msg[0] = "";
       msg[1] = "";
       phon_no_id = "";
-      res.status(200);
+      return res.status(200);
     } else {
-      res.status(404);
+      return res.status(404);
     }
   }
 };
@@ -541,7 +541,8 @@ const SendAutomatedMsg = async (req, res) => {
       console.log("data[i] : ", data[dataIndex], " number : ", translators[i].number);
       if (data[dataIndex]) {
         //check if answerd previous translation else send previos sentence
-        if (translators[i].answerd == true && translators[i].stopped == false) {
+
+        if (translators[i].answerd == true && translators[i].stopped == false && translators[i].active == true) {
           let msg = data[dataIndex].toString();
           axios({
             method: "POST",
@@ -650,10 +651,10 @@ const SendWhatsappMsg = async (req, res) => {
 
     const response = await axios.request(options);
     console.log("Message sent successfully:", response.data);
-    res.status(200).json({ success: true, message: "Message sent successfully" });
+    return res.status(200).json({ success: true, message: "Message sent successfully" });
   } catch (error) {
     console.error("Error sending message:", error);
-    res.status(500).json({ success: false, message: "Error sending message" });
+    return res.status(500).json({ success: false, message: "Error sending message" });
   }
 };
 
@@ -666,33 +667,10 @@ const GetLastCount = async (req, res) => {
     console.log("result : ", lastCount);
     const lastCount2 = lastCount[0].lastCount;
     console.log("lastCount : ", lastCount2);
-    res.status(201).json({ result: lastCount });
+    return res.status(201).json({ result: lastCount });
   } catch (error) {
     res.status(500).json({ message: "something went wrong" });
   }
-};
-
-const InvalidFormatMSG = async (number) => {
-  console.log("InvalidFormatMSG");
-  try {
-    await axios({
-      method: "POST",
-      url: "https://graph.facebook.com/v13.0/" + phone_id + "/messages?access_token=" + token,
-      data: {
-        messaging_product: "whatsapp",
-        to: number,
-        text: {
-          body: "InvalidFormatMSG plzz provide valide translation in following format ( number , translation ) eg :- (2,भाषांतर) ",
-        },
-      },
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-  } catch (error) {
-    console.error("error : ", error);
-  }
-  return;
 };
 
 const InvalidFormatMSG2 = async (number) => {
@@ -712,52 +690,7 @@ const InvalidFormatMSG2 = async (number) => {
         "Content-Type": "application/json",
       },
     });
-  } catch (error) {
-    console.error("error : ", error);
-  }
-  return;
-};
-
-const replyForStartMSG = async (number) => {
-  console.log("InvalidFormatMSG");
-  try {
-    await axios({
-      method: "POST",
-      url: "https://graph.facebook.com/v13.0/" + phone_id + "/messages?access_token=" + token,
-      data: {
-        messaging_product: "whatsapp",
-        to: number,
-        text: {
-          body: " We have started messages for your number, And from today you will receive 1 sentence per day ",
-        },
-      },
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-  } catch (error) {
-    console.error("error : ", error);
-  }
-  return;
-};
-
-const replyForStopMSG = async (number) => {
-  console.log("InvalidFormatMSG");
-  try {
-    await axios({
-      method: "POST",
-      url: "https://graph.facebook.com/v13.0/" + phone_id + "/messages?access_token=" + token,
-      data: {
-        messaging_product: "whatsapp",
-        to: number,
-        text: {
-          body: " We have stopped the messages and you will not receive messages from now on . If you want to continue in future just message 'Start' ",
-        },
-      },
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    number = "";
   } catch (error) {
     console.error("error : ", error);
   }
